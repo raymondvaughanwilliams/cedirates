@@ -1,3 +1,4 @@
+from unittest import removeResult
 from flask import Flask, render_template, request
 from structure import db,app,api,logger
 import tweepy
@@ -13,7 +14,10 @@ from models import Meme
 # access_token = 944709207038754816-pOXaIltIHr7rrORJiEOdcehpi6xUmZV
 # access_token_secret = MhECXNlbr4F4ZfxMHz4iXgbpmhMcFWWMeEQYcsFxR1PwM
 
-
+@app.route('/home/<string:tag>')
+def fingtag(tag):
+    print (tag)
+    return tag
 
 @app.route('/')
 def home():
@@ -36,6 +40,7 @@ def home():
                 #process full_text to get tags to search for
                 ntxt=[]
                 txt = []
+                # There is a faster way to do this
                 for x in text.split():
                     if x.startswith("@"):
                         ntxt.append(x)
