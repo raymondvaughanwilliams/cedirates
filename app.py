@@ -1,10 +1,12 @@
 from unittest import removeResult
-from flask import Flask, render_template, request
-from structure import db,app,api,logger
+from flask import Flask, render_template, request,redirect,url_for,flash 
+from structure import db,app,api,logger,photos
 import tweepy
+import secrets
 import requests
 import logging
 from models import Meme,Mention
+from forms import Addmeme
 
 
 
@@ -15,14 +17,15 @@ from models import Meme,Mention
 # access_token_secret = MhECXNlbr4F4ZfxMHz4iXgbpmhMcFWWMeEQYcsFxR1PwM
 
 @app.route('/home/<string:tag>')
-def fingtag(tag):
+def findtag(tag):
     # memes = Meme.query.filter_by(tags=tag).all()
     memes = Meme.query.filter(Meme.tags.like('%'+tag+'%')).all()
+    mentions = Mention.query.filter_by(tags=tag).all()
     print (tag)
     print (memes)
-    return render_template('index.html',memes=memes)
+    return render_template('indexnew.html',memes=memes,mentions=mentions,tags=tag)
 
-@app.route('/')
+@app.route('/home')
 def home():
     # last_id = get_last_tweet(file)
     last_id = "1"
@@ -32,7 +35,7 @@ def home():
     else:
         for mention in mentions:
             print(mention)
-            mention_check = Meme.query.filter_by(mention_id=mention.id).first()
+            mention_check = Mention.query.filter_by(mention_id=mention.id).first()
             if mention_check is None and "qqq" in mention.full_text:
                 tweet= []
                 new_id = mention.id
@@ -65,9 +68,9 @@ def home():
                 url = domain + text
                 # console.log(text)
                 api.update_status('@' + mention.user.screen_name + " Here's your Search results. Click the link below: " + domain)
-                return render_template("index.html", memes=memes)
+                return render_template("indexnew.html", memes=memes)
 
-    return render_template('index.html')
+    return render_template('indexnew.html')
 
 
 
@@ -85,7 +88,21 @@ def add():
 
 
 
-
+@app.route('/addmeme', methods=['GET','POST'])
+def addmeme():
+    form = Addmeme()
+    # form.genre.choices = [(g.id, g.name) for g in Genre.query.filter_by(id='1').all()]
+    if request.method == 'POST' and 'image_1' in request.files:
+        tags = form.tags.data
+        type = form.type.data
+        image_1 = photos.save(request.files['image_1'], name=secrets.token_hex(10) + ".")
+        img= "/static/images/"+image_1
+        meme = Meme(tags=tags,type=type,image=img)
+        db.session.add(meme)
+        db.session.commit()
+        flash(f'Ticket added successfully','success')
+        return redirect(url_for('home'))
+    return render_template('addmeme.html',title ="Add Meme",form=form)
 
 
 
