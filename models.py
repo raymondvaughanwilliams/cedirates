@@ -20,7 +20,16 @@ class Meme(db.Model):
 
 
 
+class Mention(db.Model):
+    __seachbale__ = ['name','description']
+    id = db.Column(db.Integer, primary_key=True)
+    mention_id = db.Column(db.String, nullable=True)
+    tags = db.Column(db.Text, nullable=True)
+    full_text = db.Column(db.Text, nullable=True)
+    pub_date = db.Column(db.DateTime, nullable=False,default=datetime.utcnow)
 
+    def __repr__(self):
+        return '<Mention %r>' % self.tags
 
 
 

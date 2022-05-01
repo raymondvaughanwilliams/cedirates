@@ -155,6 +155,21 @@ Licence URI: https://www.os-templates.com/template-terms
         </figure>
       </li>
     </ul>
+
+    {% for meme in memes  %}
+    {% if meme %}
+    <ul class="nospace group">
+      <li class="one_third">
+        <article>
+          <h6 class="heading">{{meme.tags}}</h6>
+          <p>{{meme.description}}</p>
+          </article>
+      </li>
+    </ul>
+    {% else %}
+    <p>empty</p>
+    {% endif %}
+      {% endfor %}
     <!-- ################################################################################################ -->
   </section>
 </div>
@@ -175,6 +190,20 @@ Licence URI: https://www.os-templates.com/template-terms
     <!-- ################################################################################################ -->
     <ul class="nospace clear">
       <li class="one_quarter first">
+        {% for meme in memes  %}
+        {% if meme %}
+        <ul class="nospace group">
+          <li class="one_third">
+            <article>
+              <h6 class="heading">{{meme.tags}}</h6>
+              <p>{{meme.description}}</p>
+              </article>
+          </li>
+        </ul>
+        {% else %}
+        <p>empty</p>
+        {% endif %}
+          {% endfor %}
         <div class="block clear"><a href="#"><i class="fas fa-phone"></i></a> <span><strong>Give us a call:</strong> +00 (123) 456 7890</span></div>
       </li>
       <li class="one_quarter">

@@ -4,7 +4,7 @@ from structure import db,app,api,logger
 import tweepy
 import requests
 import logging
-from models import Meme
+from models import Meme,Mention
 
 
 
@@ -16,8 +16,11 @@ from models import Meme
 
 @app.route('/home/<string:tag>')
 def fingtag(tag):
+    # memes = Meme.query.filter_by(tags=tag).all()
+    memes = Meme.query.filter(Meme.tags.like('%'+tag+'%')).all()
     print (tag)
-    return tag
+    print (memes)
+    return render_template('index.html',memes=memes)
 
 @app.route('/')
 def home():
@@ -34,9 +37,10 @@ def home():
                 tweet= []
                 new_id = mention.id
                 text = mention.full_text
-                meme = Meme(description=text,mention_id=new_id)
-                db.session.add(meme)
-                db.session.commit()
+                # meme = Meme(description=text,mention_id=new_id)
+                # db.session.add(meme)
+                # db.session.commit()
+                # mention = Mention(mention_id=new_id,full_text=text)
                 #process full_text to get tags to search for
                 ntxt=[]
                 txt = []
@@ -51,9 +55,13 @@ def home():
                 for tex in txt:
                     tags= ''.join(tex)
                     print(tags)
+                themention = Mention(mention_id=new_id,full_text=text,tags=tags)
+                db.session.add(themention)
+                db.session.commit()
+
                 # meme = Meme.query.filter_by(tags=text).first()
                 memes = Meme.query.filter(Meme.tags.like('%'+tags+'%')).all()
-                domain = "localhost/home?tags=" + tags 
+                domain = "localhost:5000/home/" + tags 
                 url = domain + text
                 # console.log(text)
                 api.update_status('@' + mention.user.screen_name + " Here's your Search results. Click the link below: " + domain)
