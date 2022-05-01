@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<!--
+Template Name: Trealop
+Author: <a href="https://www.os-templates.com/">OS Templates</a>
+Author URI: https://www.os-templates.com/
+Copyright: OS-Templates.com
+Licence: Free to use under our free template licence terms
+Licence URI: https://www.os-templates.com/template-terms
+-->
+<html lang="">
+<!-- To declare your language - read more here: https://www.w3.org/International/questions/qa-html-language-declarations -->
+<head>
+<title>SHINOBI</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link href="layout/styles/layout.css" rel="stylesheet" type="text/css" media="all">
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/layout.css') }}">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+</head>
+<body id="top">
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<div class="wrapper row1">
+  <header id="header" class="hoc clear">
+    <div id="logo" class="fl_left"> 
+      <!-- ################################################################################################ -->
+      <h1><a href="index.html">SHINOBI</a></h1>
+      <!-- ################################################################################################ -->
+    </div>
+    <nav id="mainav" class="fl_right"> 
+      <!-- ################################################################################################ -->
+      <ul class="clear">
+        <li class="active"><a href="index.html">Home</a></li>
+        
+        <li><a href="#newest">New Movies</a></li>
+            <li><a href="#nowshowing">Now Showing</a></li>
+        <li><a href="#about">About Us</a></li>
+        <li><button data-toggle="modal" data-target="#editaboutappearance" ><i class="fas fa-palette"></i>Edit Ticket</i></button>
+        </li>
+      </ul>
+      <!-- ################################################################################################ -->
+    </nav>
+  </header>
+</div>
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<div class="wrapper bgded overlay gradient" style="background-image:url('images/demo/backgrounds/01.png');">
+  <div id="pageintro" class="hoc clear"> 
+    <!-- ################################################################################################ -->
+    <article>
+      <h3 class="heading">SHINOBI CINEMAS</h3>
+      <p>A PERFECT CINEMA</p>
+      <!--<footer>
+        <ul class="nospace inline pushright">
+          <li><a class="btn" href="#">Ultricies dui orci</a></li>
+          <li><a class="btn inverse" href="#">Mollis libero quis</a></li>
+        </ul>
+      </footer>-->
+    </article>
+    <!-- ################################################################################################ -->
+  </div>
+</div>
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<div class="wrapper row2">
+  <section id='newest' class="hoc container clear"> 
+    <!-- ################################################################################################ -->
+    <div class="sectiontitle">
+      <h6 class="heading">NEWEST MOVIES</h6>
+      <p>Check out newly released movies</p>
+    </div>
+  
+    <ul class="nospace group prices">
+   {% for meme in memes  %}
+      <li class="one_third">
+        <article><i class="fas fa-dolly green"></i>
+          <h6 class="heading">Suscipit</h6>
+          <p>meme.description</p>
+          <p><sup>&euro;</sup><strong>100</strong><em>pcm</em></p>
+          <footer><a class="btn" href="#">Details</a></footer>
+        </article>
+      </li>
+      {% endfor %}
+      <li class="one_third">
+        <article><i class="fas fa-hands blue"></i>
+          <h6 class="heading">Dignissim</h6>
+          <p>Aliquam auctor nisl nec diam ornare nam molestie massa quis pede vestibulum fringilla risus in metus nullam egestas</p>
+          <p><sup>&euro;</sup><strong>125</strong><em>pcm</em></p>
+          <footer><a class="btn" href="#">Details</a></footer>
+        </article>
+      </li>
+    </ul>
+    
+    <!-- ################################################################################################ -->
+  </section>
+
+</div>
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<div class="wrapper coloured">
+  <article class="hoc cta clear"> 
+    <!-- ################################################################################################ -->
+    <h6 class="three_quarter first">Velit tristique sem vehicula laoreet nullam elementum</h6>
+   
+    <footer class="one_quarter"><a class="btn" href="#">Ipsum pharetra leo</a></footer>
+    <!-- ################################################################################################ -->
+  </article>
+</div>
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<div class="wrapper row3">
+  <main class="hoc container clear"> 
+    <!-- main body -->
+    <!-- ################################################################################################ -->
+   
+    <!-- ################################################################################################ -->
+    <!-- / main body -->
+    <div class="clear"></div>
+  </main>
+</div>
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<div class="wrapper row2">
+  <section id="latest" class="hoc container clear"> 
+    <!-- ################################################################################################ -->
+    <div class="sectiontitle">
+      <h6 class="heading">About Us</h6>
+      <p>Serene and ultramodern cinema</p>
+    </div>
+    <ul class="nospace group">
+      <li class="one_third">
+        <figure><a class="imgover" href="#"><img src="images/demo/348x261.png" alt=""></a>
+          <figcaption>Good Rates</figcaption>
+        </figure>
+      </li>
+      <li class="one_third">
+        <figure><a class="imgover" href="#"><img src="images/demo/348x261.png" alt=""></a>
+          <figcaption>Premieres</figcaption>
+        </figure>
+      </li>
+      <li class="one_third">
+        <figure><a class="imgover" href="#"><img src="images/demo/348x261.png" alt=""></a>
+          <figcaption>Serene Environment</figcaption>
+        </figure>
+      </li>
+    </ul>
+    <!-- ################################################################################################ -->
+  </section>
+</div>
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<!-- Upcoming Movies -->
+<
+
+
+
+
+
+
+    <!-- ################################################################################################ -->
+    <ul class="nospace clear">
+      <li class="one_quarter first">
+        <div class="block clear"><a href="#"><i class="fas fa-phone"></i></a> <span><strong>Give us a call:</strong> +00 (123) 456 7890</span></div>
+      </li>
+      <li class="one_quarter">
+        <div class="block clear"><a href="#"><i class="fas fa-envelope"></i></a> <span><strong>Send us a mail:</strong> support@domain.com</span></div>
+      </li>
+      <li class="one_quarter">
+        <div class="block clear"><a href="#"><i class="fas fa-clock"></i></a> <span><strong> Monday - Saturday:</strong> 08.00am - 18.00pm</span></div>
+      </li>
+      <li class="one_quarter">
+        <div class="block clear"><a href="#"><i class="fas fa-map-marker-alt"></i></a> <span><strong>Come visit us:</strong> Directions to <a href="#">our location</a></span></div>
+      </li>
+    </ul>
+    <!-- ################################################################################################ -->
+  </section>
+
+</div>
+
+
+<!--<button data-toggle="modal" data-target="#editaboutappearance" class="col-md-12"><i class="fas fa-palette"></i>Edit Ticket</i></button>-->
+
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<div class="wrapper row4">
+  <footer id="footer" class="hoc clear"> 
+    <!-- ################################################################################################ -->
+    <div class="one_quarter first">
+      <h6 class="heading">A convallis ultricies</h6>
+      <p>Luctus et dolor nulla facilisi fusce sit amet magna non odio molestie egestas nullam id odio.</p>
+      <p class="btmspace-30">Quis risus placerat aliquam nunc nec nunc morbi vel nisi sit amet orci adipiscing pharetra [<a href="#"><i class="fas fa-arrow-right"></i></a>]</p>
+      <ul class="faico clear">
+        <li><a class="faicon-facebook" href="#"><i class="fab fa-facebook"></i></a></li>
+        <li><a class="faicon-google-plus" href="#"><i class="fab fa-google-plus-g"></i></a></li>
+        <li><a class="faicon-linkedin" href="#"><i class="fab fa-linkedin"></i></a></li>
+        <li><a class="faicon-twitter" href="#"><i class="fab fa-twitter"></i></a></li>
+        <li><a class="faicon-vk" href="#"><i class="fab fa-vk"></i></a></li>
+      </ul>
+    </div>
+    
+    <!-- ################################################################################################ -->
+  </footer>
+</div>
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<div class="wrapper row5">
+  <div id="copyright" class="hoc clear"> 
+    <!-- ################################################################################################ -->
+    <p class="fl_left">Copyright &copy; 2022 - All Rights Reserved - <a href="#">Champ</a></p>
+    <p class="fl_right">Template by <a target="_blank" href="https://www.os-templates.com/" title="Free Website Templates">OS Templates</a></p>
+    <!-- ################################################################################################ -->
+  </div>
+</div>
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<!-- ################################################################################################ -->
+<a id="backtotop" href="#top"><i class="fas fa-chevron-up"></i></a>
+<!-- JAVASCRIPTS -->
+<script src="{{ url_for('static',filename='scripts/jquery.min.js') }}"></script>
+<script src="{{ url_for('static',filename='scripts/jquery.backtotop.js') }}"></script>
+<script src="{{ url_for('static',filename='layout/scripts/jquery.mobilemenu.js') }}"></script>
+
+<script src="layout/scripts/jquery.backtotop.js"></script>
+<script src="layout/scripts/jquery.mobilemenu.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>

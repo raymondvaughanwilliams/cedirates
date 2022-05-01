@@ -1,0 +1,20 @@
+#uicontent {
+    position: relative;
+  }
+  #uicontent img {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+  }
+
+      #topright {
+          position: absolute;
+          right: 0;
+          top: 0;
+          display: block;
+          height: 125px;
+          width: 125px;
+          text-indent: -999em;
+          text-decoration: none;
+      }
+ 
