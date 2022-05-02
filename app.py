@@ -75,11 +75,12 @@ def home():
             print("Start")
             direct_messages = api.get_direct_messages(count=10)
             print(len(direct_messages))
+            count == 0
             for message in direct_messages:
                 if message.id > since_id:
                     print(message)
                     print(message.id)
-                    print(message.message_create.message_data.text)
+                    print(message.message_create['sender_id']['text'])
                     # k = json.loads(message)
                     # for items in k:
                     #     print(items['message_create']['message_data']['text'])
