@@ -6,7 +6,7 @@ import secrets
 import requests
 import json
 import logging
-from models import Meme,Mention
+from models import Meme,Mention,DirectMessage
 from forms import Addmeme
 
 
@@ -70,38 +70,42 @@ def home():
                 # console.log(text)
                 api.update_status('@' + mention.user.screen_name + " Here's your Search results. Click the link below: " + domain)
                 return render_template("indexnew.html", memes=memes)
-            since_id = "1520898332213850118"
-            count = "10"
-            print("Start")
-            direct_messages = api.get_direct_messages(count=10)
-            print(len(direct_messages))
-            count == 0
-            for message in direct_messages:
-                if message.id > since_id:
-                    print(message)
-                    print(message.id)
-                    print(message.message_create['sender_id']['text'])
-                    # k = json.loads(message)
-                    # for items in k:
-                    #     print(items['message_create']['message_data']['text'])
-                #extract text from message json
+        since_id = "1520898332213850118"
+        count = "10"
+        # print("Start")
+        direct_messages = api.get_direct_messages(count=10)
+        # print(len(direct_messages))
+        count == 0
+        for message in direct_messages:
+            message_check = DirectMessage.query.filter_by(message_id=message.id).first()
+            if message_check is None:
+            # if message.id > since_id:
+                dm_id= message.id
+                text = message.message_create['message_data']['text']
+                sender_id = message.message_create['sender_id']
+                # print(message)
+                # print(message.id)
+                print(message.message_create['message_data']['text'])
+                #process full_text to get tags to search for
+                ntxt=[]
+                txt = []
+                # There is a faster way to do this
+                for x in text.split():
+                    if x.startswith("qqq"):
+                        ntxt.append(x)
+                    else:
+                        txt.append(x)
+                for tex in txt:
+                    tags= ''.join(tex)
+                    # print(tags)
+                themessage= DirectMessage(message_id=dm_id,text=text,sender_id=sender_id)
+                print(themessage)
+                db.session.add(themessage)
+                db.session.commit()
 
+                memes = Meme.query.filter(Meme.tags.like('%'+tags+'%')).all()
+                domain = "localhost:5000/home/" + text 
 
-                # dmy= json.loads(message)['text']
-                # print(dmy)
-                # print(message[0].id)
-            # k = json.loads(status)['text']
-            # direct_messages = tweepy.Cursor(api.get_direct_messages(11111)).items()
-            # if len(direct_messages) == 0:
-            #     print('empty')
-            #     return
-            # else:
-            # for dm in direct_messages:
-            # print(direct_messages)
-            #     if "qqq" in dm.text:
-            #         print(dm.text)
-            # else:
-            #     print("No qqq")
 
     return render_template('indexnew.html')
 

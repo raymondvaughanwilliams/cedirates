@@ -32,6 +32,15 @@ class Mention(db.Model):
         return '<Mention %r>' % self.tags
 
 
+class DirectMessage(db.Model):
+    __seachbale__ = ['name','description']
+    id = db.Column(db.Integer, primary_key=True)
+    message_id = db.Column(db.String, nullable=True)
+    text = db.Column(db.Text, nullable=True)
+    sender_id = db.Column(db.String, nullable=True)
+    pub_date = db.Column(db.DateTime, nullable=False,default=datetime.utcnow)
+
+
 
 
 
