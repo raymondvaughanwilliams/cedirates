@@ -4,6 +4,7 @@ from structure import db,app,api,logger,photos
 import tweepy
 import secrets
 import requests
+import json
 import logging
 from models import Meme,Mention
 from forms import Addmeme
@@ -34,7 +35,7 @@ def home():
         return
     else:
         for mention in mentions:
-            print(mention)
+            # print(mention)
             mention_check = Mention.query.filter_by(mention_id=mention.id).first()
             if mention_check is None and "qqq" in mention.full_text:
                 tweet= []
@@ -57,7 +58,7 @@ def home():
                         txt.append(x)
                 for tex in txt:
                     tags= ''.join(tex)
-                    print(tags)
+                    # print(tags)
                 themention = Mention(mention_id=new_id,full_text=text,tags=tags)
                 db.session.add(themention)
                 db.session.commit()
@@ -69,6 +70,37 @@ def home():
                 # console.log(text)
                 api.update_status('@' + mention.user.screen_name + " Here's your Search results. Click the link below: " + domain)
                 return render_template("indexnew.html", memes=memes)
+            since_id = "1520898332213850118"
+            count = "10"
+            print("Start")
+            direct_messages = api.get_direct_messages(count=10)
+            print(len(direct_messages))
+            for message in direct_messages:
+                if message.id > since_id:
+                    print(message)
+                    print(message.id)
+                    print(message.message_create.message_data.text)
+                    # k = json.loads(message)
+                    # for items in k:
+                    #     print(items['message_create']['message_data']['text'])
+                #extract text from message json
+
+
+                # dmy= json.loads(message)['text']
+                # print(dmy)
+                # print(message[0].id)
+            # k = json.loads(status)['text']
+            # direct_messages = tweepy.Cursor(api.get_direct_messages(11111)).items()
+            # if len(direct_messages) == 0:
+            #     print('empty')
+            #     return
+            # else:
+            # for dm in direct_messages:
+            # print(direct_messages)
+            #     if "qqq" in dm.text:
+            #         print(dm.text)
+            # else:
+            #     print("No qqq")
 
     return render_template('indexnew.html')
 
@@ -145,19 +177,10 @@ if __name__=='__main__':
 
 
 
-        # except:
-        #     logger.info("Already replied to {}".format(mention.id))
 
 
-# def get_last_tweet(file):
-#     f = open(file, 'r')
-#     lastId = int(f.read().strip())
-#     f.close()
-#     return lastId
 
-# def put_last_tweet(file, Id):
-#     f = open(file, 'w')
-#     f.write(str(Id))
-#     f.close()
-#     logger.info("Updated the file with the latest tweet Id")
-#     return
+# direct_messages = tweepy.Cursor(api.direct_messages, since_id=since_id).items()
+
+# for dm in direct_messages:
+#         print dm.text
