@@ -32,10 +32,19 @@ def findtag(tag):
     response = urllib.request.urlopen(url)
     mdata = response.read()
     dict = json.loads(mdata)
-    print (dict)
+    length = len(dict)
+    print (length)
     print('start')
-    # print(r)
-    return render_template('indexnew.html',memes=memes,mentions=mentions,tags=tag,giphys=r,dict=dict)
+    # print(dict.data.images.original.url)
+    for i in range(0, len(dict)):
+
+        title = dict['data'][i]['title']
+        url = dict['data'][i]['images']['original']['url']
+        print (title)
+        print (url)
+        print('start')
+        # print(r)
+    return render_template('indexnew.html',memes=memes,mentions=mentions,tags=tag,giphys=r,dict=dict,len=length)
 
 
 @app.route('/home/view/<string:id>')
@@ -225,3 +234,26 @@ if __name__=='__main__':
 
 # for dm in direct_messages:
 #         print dm.text
+
+
+        # <!-- row -->
+        # <!--gihys-
+        # <div class="row tm-mb-90 tm-gallery">
+        #     {% for giphy in dict %}
+        #     {% if giphy %}
+        #     <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-5">
+        #         <figure class="effect-ming tm-video-item">
+        #             <img src="{{giphy.url}}" alt="Image" class="img-fluid">
+        #             <figcaption class="d-flex align-items-center justify-content-center">
+        #                 <h2>Clocks</h2>
+        #                 <a href="{{giphy.url}}">View more</a>
+        #             </figcaption>                    
+        #         </figure>
+        #         <div class="d-flex justify-content-between tm-text-gray">
+        #             <span class="tm-text-gray-light">{{giphy.data[giphy]['images']['original']['url']}}</span>
+        #             <span>{{giphy['title']}}</span>
+        #         </div>
+        #     </div>
+        #         {% endif %}
+        #     {% endfor %}
+        # </div>-->
