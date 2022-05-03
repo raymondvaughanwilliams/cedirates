@@ -22,9 +22,24 @@ def findtag(tag):
     # memes = Meme.query.filter_by(tags=tag).all()
     memes = Meme.query.filter(Meme.tags.like('%'+tag+'%')).all()
     mentions = Mention.query.filter_by(tags=tag).all()
-    print (tag)
-    print (memes)
-    return render_template('indexnew.html',memes=memes,mentions=mentions,tags=tag)
+    # print (tag)
+    # print (memes)
+    payload = {'s': tag, 'api_key': 'BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et'}
+    r = requests.get('http://api.giphy.com/v1/gifs/search?api_key=BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et&q='+tag)
+    # https://api.giphy.com/v1/gifs/search?api_key=BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et&q=man&limit=25&offset=0&rating=g&lang=en
+    r = r.json()
+    print('start')
+    print(r)
+    return render_template('indexnew.html',memes=memes,mentions=mentions,tags=tag,giphys=r)
+
+
+@app.route('/home/view/<string:id>')
+def view(id):
+    # memes = Meme.query.filter_by(tags=tag).all()
+    meme = Meme.query.filter_by(id=id).first()
+    tags= meme.tags
+    similar = Meme.query.filter(Meme.tags.like('%'+tags+'%')).all()
+    return render_template('viewmeme.html',meme=meme,similar=similar)
 
 @app.route('/home')
 def home():
@@ -69,7 +84,7 @@ def home():
                 url = domain + text
                 # console.log(text)
                 api.update_status('@' + mention.user.screen_name + " Here's your Search results. Click the link below: " + domain)
-                return render_template("indexnew.html", memes=memes)
+                return render_template("indexnew.html", memes=memes,title="IMG World")
         since_id = "1520898332213850118"
         count = "10"
         # print("Start")
@@ -78,7 +93,7 @@ def home():
         count == 0
         for message in direct_messages:
             message_check = DirectMessage.query.filter_by(message_id=message.id).first()
-            if message_check is None:
+            if message_check is None and "qqq" in message.message_create['message_data']['text']:
             # if message.id > since_id:
                 dm_id= message.id
                 text = message.message_create['message_data']['text']
@@ -98,18 +113,34 @@ def home():
                 for tex in txt:
                     tags= ''.join(tex)
                     # print(tags)
-                themessage= DirectMessage(message_id=dm_id,text=text,sender_id=sender_id)
+                themessage= DirectMessage(message_id=dm_id,text=tags,sender_id=sender_id)
                 print(themessage)
+                print(message)
                 db.session.add(themessage)
                 db.session.commit()
 
                 memes = Meme.query.filter(Meme.tags.like('%'+tags+'%')).all()
-                domain = "localhost:5000/home/" + text 
+                domain = "https://www.localhost:5000/home/" + tags 
+                reply =  " Here's your Search results. Click the link below: " + domain
+                api.send_direct_message(sender_id, reply)
+                return render_template("indexnew.html", memes=memes,title="IMG World")
 
 
-    return render_template('indexnew.html')
 
+    return render_template('indexnew.html',title="IMG World")
 
+@app.route('/home/gifs/<string:tags>')  
+def search_gif(tags):
+    #get a GIF that is similar to text sent
+    payload = {'s': tags, 'api_key': 'BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et'}
+    r = requests.get('http://api.giphy.com/v1/gifs/search?api_key=BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et&q=man')
+    # https://api.giphy.com/v1/gifs/search?api_key=BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et&q=man&limit=25&offset=0&rating=g&lang=en
+    r = r.json()
+    # print(r)
+    # url = r['data']['images']['original']['url']
+    # print(url)
+
+    return r
 
 @app.route('/search')
 def search():
