@@ -4,7 +4,7 @@ from structure import db,app,api,logger,photos
 import tweepy
 import secrets
 import requests
-import json
+import urllib.request, json
 import logging
 from models import Meme,Mention,DirectMessage
 from forms import Addmeme
@@ -26,11 +26,16 @@ def findtag(tag):
     # print (memes)
     payload = {'s': tag, 'api_key': 'BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et'}
     r = requests.get('http://api.giphy.com/v1/gifs/search?api_key=BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et&q='+tag)
-    # https://api.giphy.com/v1/gifs/search?api_key=BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et&q=man&limit=25&offset=0&rating=g&lang=en
     r = r.json()
+    # https://api.giphy.com/v1/gifs/search?api_key=BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et&q=man&limit=25&offset=0&rating=g&lang=en
+    url= 'http://api.giphy.com/v1/gifs/search?api_key=BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et&q='+tag
+    response = urllib.request.urlopen(url)
+    mdata = response.read()
+    dict = json.loads(mdata)
+    print (dict)
     print('start')
-    print(r)
-    return render_template('indexnew.html',memes=memes,mentions=mentions,tags=tag,giphys=r)
+    # print(r)
+    return render_template('indexnew.html',memes=memes,mentions=mentions,tags=tag,giphys=r,dict=dict)
 
 
 @app.route('/home/view/<string:id>')

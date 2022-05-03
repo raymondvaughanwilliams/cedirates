@@ -172,7 +172,7 @@ https://templatemo.com/tm-556-catalog-z
         <!-- row -->
         <!--gihys-->
         <div class="row tm-mb-90 tm-gallery">
-            {% for giphy in giphys %}
+            {% for giphy in dict %}
             {% if giphy %}
             <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-5">
                 <figure class="effect-ming tm-video-item">
@@ -183,7 +183,7 @@ https://templatemo.com/tm-556-catalog-z
                     </figcaption>                    
                 </figure>
                 <div class="d-flex justify-content-between tm-text-gray">
-                    <span class="tm-text-gray-light">{{giphy['url']}}</span>
+                    <span class="tm-text-gray-light">{{giphy['source_tld']}}</span>
                     <span>{{giphy['title']}}</span>
                 </div>
             </div>
