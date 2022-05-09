@@ -67,7 +67,11 @@ https://templatemo.com/tm-556-catalog-z
         </div>
         <div class="row tm-mb-90">            
             <div class="col-xl-8 col-lg-7 col-md-6 col-sm-12">
+                {% if meme %}
                 <img src="{{meme.image}}" alt="Image" class="img-fluid">
+                {% else %}
+                <img src="{{dict['data']['images']['original']['url']}}" alt="Image" class="img-fluid" >
+                {% endif %}
             </div>
             <div class="col-xl-4 col-lg-5 col-md-6 col-sm-12">
                 <div class="tm-bg-gray tm-video-details">
@@ -75,7 +79,11 @@ https://templatemo.com/tm-556-catalog-z
                         Please support us by making <a href="https://paypal.me/templatemo" target="_parent" rel="sponsored">a PayPal donation</a>. So we can quit our jobs
                     </p>
                     <div class="text-center mb-5">
-                        <a href="#" class="btn btn-primary tm-btn-big">Download</a>
+                        {% if meme %}
+                        <a href="{{ url_for('download',filename=meme.image[1:]) }}" class="btn btn-primary tm-btn-big">Download</a>
+                        {% else %}
+                        <a href="{{ url_for('download',filename=meme.image[1:]) }}" class="btn btn-primary tm-btn-big" download>Download</a>
+                        {% endif %}
                     </div>                    
                    
                     <div class="mb-4">

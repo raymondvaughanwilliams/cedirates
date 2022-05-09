@@ -1,6 +1,7 @@
 from unittest import removeResult
-from flask import Flask, render_template, request,redirect,url_for,flash 
-from structure import db,app,api,logger,photos
+from flask import Flask, render_template, request,redirect,url_for,flash
+from structure import db,app,api,logger,photos,basedir
+from flask import send_from_directory,send_file
 import tweepy
 import secrets
 import requests
@@ -8,6 +9,7 @@ import urllib.request, json
 import logging
 from models import Meme,Mention,DirectMessage
 from forms import Addmeme
+import os 
 
 
 
@@ -16,6 +18,20 @@ from forms import Addmeme
 # bearer_token = AAAAAAAAAAAAAAAAAAAAAOqEbgEAAAAABLp1X6nGWW2nXjYjgBjQ5VYCqSQ%3DpVZpzJVo4Bvy8GNQYeJA0fHcFEfkOlWSQUntNCncRmRC1BgF92
 # access_token = 944709207038754816-pOXaIltIHr7rrORJiEOdcehpi6xUmZV
 # access_token_secret = MhECXNlbr4F4ZfxMHz4iXgbpmhMcFWWMeEQYcsFxR1PwM
+
+# app.route('/download/<path:filename>', methods=['GET', 'POST'])
+# def download():
+#     if request.method == 'POST':
+#         url = request.form['url']
+
+
+@app.route('/download/<path:filename>', methods=['GET', 'POST'])
+def download(filename):
+    uploads =  os.path.join(basedir, 'static/images')
+    path = filename
+    return send_file(path, as_attachment=True)
+    # return send_from_directory(directory=uploads, filename=filename)
+
 
 @app.route('/home/<string:tag>')
 def findtag(tag):
@@ -51,9 +67,19 @@ def findtag(tag):
 def view(id):
     # memes = Meme.query.filter_by(tags=tag).all()
     meme = Meme.query.filter_by(id=id).first()
-    tags= meme.tags
-    similar = Meme.query.filter(Meme.tags.like('%'+tags+'%')).all()
-    return render_template('viewmeme.html',meme=meme,similar=similar)
+    if len(id) > 10:
+        url = id 
+        url= 'http://api.giphy.com/v1/gifs/'+id+'?api_key=BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et'
+        response = urllib.request.urlopen(url)
+        mdata = response.read()
+        dict = json.loads(mdata)
+        print(dict)
+    if meme:
+        tags= meme.tags
+        similar = Meme.query.filter(Meme.tags.like('%'+tags+'%')).all()
+        return render_template('viewmeme.html',meme=meme,similar=similar)
+
+    return render_template('viewmeme.html',meme=meme,url=url,dict=dict)
 
 @app.route('/home')
 def home():
@@ -227,7 +253,8 @@ if __name__=='__main__':
 
 
 
-
+# with open('test.gif','wb') as f:
+#     f.write(requests.get(url_gif).content)
 
 
 # direct_messages = tweepy.Cursor(api.direct_messages, since_id=since_id).items()
@@ -256,4 +283,8 @@ if __name__=='__main__':
         #     </div>
         #         {% endif %}
         #     {% endfor %}
+
+
+                            # <img src="{{dict['data'][i]['images']['original']['url']}}" alt="Image" class="img-fluid">
+
         # </div>-->
