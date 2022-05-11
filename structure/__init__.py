@@ -31,7 +31,6 @@ patch_request_class(app)
 
 
 
-
 db = SQLAlchemy(app)
 migrate = Migrate(app, db,render_as_batch=True)
 

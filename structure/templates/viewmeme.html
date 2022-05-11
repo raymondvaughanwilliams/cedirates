@@ -81,8 +81,8 @@ https://templatemo.com/tm-556-catalog-z
                     <div class="text-center mb-5">
                         {% if meme %}
                         <a href="{{ url_for('download',filename=meme.image[1:]) }}" class="btn btn-primary tm-btn-big">Download</a>
-                        {% else %}
-                        <a href="{{ url_for('download',filename=meme.image[1:]) }}" class="btn btn-primary tm-btn-big" download>Download</a>
+                        {% else %} 
+                        <a href="{{ url_for('download',filename=dict['data']['id']) }}" class="btn btn-primary tm-btn-big" >aDownload</a>
                         {% endif %}
                     </div>                    
                    

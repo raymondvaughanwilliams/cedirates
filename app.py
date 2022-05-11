@@ -27,10 +27,33 @@ import os
 
 @app.route('/download/<path:filename>', methods=['GET', 'POST'])
 def download(filename):
-    uploads =  os.path.join(basedir, 'static/images')
-    path = filename
-    return send_file(path, as_attachment=True)
-    # return send_from_directory(directory=uploads, filename=filename)
+    if 'static/images' in filename:
+        uploads =  os.path.join(basedir, 'static/images')
+        path = filename
+        return send_file(path, as_attachment=True)
+    else:
+        url= 'http://api.giphy.com/v1/gifs/'+filename+'?api_key=BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et'
+        response = urllib.request.urlopen(url)
+        mdata = response.read()
+        dict = json.loads(mdata)
+        image= dict['data']['images']['original']['url']
+        uploads =  os.path.join(basedir, 'static/images/')
+        
+
+        print(image+'imageofgiphy')
+
+        with open(filename +'.gif', 'w') as f:
+            f.write(image)
+        urllib.request.urlretrieve(image, uploads + filename +'.gif')
+
+        url = image
+        response = requests.get(url)
+        data = response.content
+
+        return send_file(uploads + filename +'.gif', as_attachment=True)
+ 
+
+
 
 
 @app.route('/home/<string:tag>')
@@ -51,16 +74,18 @@ def findtag(tag):
     length = len(dict)
     print (length)
     print('start')
-    # print(dict.data.images.original.url)
-    for i in range(0, len(dict)):
 
-        title = dict['data'][i]['title']
-        url = dict['data'][i]['images']['original']['url']
-        print (title)
-        print (url)
-        print('start')
+    if dict:
+    # print(dict.data.images.original.url)
+        for i in range(0, len(dict)):
+
+            title = dict['data'][i]['title']
+            url = dict['data'][i]['images']['original']['url']
+            print (title)
+            print (url)
+            print('start')
         # print(r)
-    return render_template('indexnew.html',memes=memes,mentions=mentions,tags=tag,giphys=r,dict=dict,len=length)
+    return render_template('indexnew.html',memes=memes,mentions=mentions,tags=tag,giphys=r,dict=dict,len=length,search='yes')
 
 
 @app.route('/home/view/<string:id>')
@@ -73,11 +98,12 @@ def view(id):
         response = urllib.request.urlopen(url)
         mdata = response.read()
         dict = json.loads(mdata)
+        leng = len(dict)
         print(dict)
     if meme:
         tags= meme.tags
         similar = Meme.query.filter(Meme.tags.like('%'+tags+'%')).all()
-        return render_template('viewmeme.html',meme=meme,similar=similar)
+        return render_template('viewmeme.html',meme=meme,similar=similar,leng=leng)
 
     return render_template('viewmeme.html',meme=meme,url=url,dict=dict)
 
@@ -167,7 +193,7 @@ def home():
 
 
 
-    return render_template('indexnew.html',title="IMG World")
+    return render_template('indexnew.html',title="IMG World",search='no')
 
 @app.route('/home/gifs/<string:tags>')  
 def search_gif(tags):
@@ -195,6 +221,12 @@ def add():
         text = request.form['text']
 
 
+allowed_extensions = ['png', 'jpg', 'jpeg', 'gif']
+
+def check_file_extension(filename):
+    return filename.rsplit('.', 1)[1].lower() in allowed_extensions
+
+
 
 @app.route('/addmeme', methods=['GET','POST'])
 def addmeme():
@@ -205,9 +237,10 @@ def addmeme():
         type = form.type.data
         image_1 = photos.save(request.files['image_1'], name=secrets.token_hex(10) + ".")
         img= "/static/images/"+image_1
-        meme = Meme(tags=tags,type=type,image=img)
-        db.session.add(meme)
-        db.session.commit()
+        if check_file_extension(image_1):
+            meme = Meme(tags=tags,type=type,image=img)
+            db.session.add(meme)
+            db.session.commit()
         flash(f'Ticket added successfully','success')
         return redirect(url_for('home'))
     return render_template('addmeme.html',title ="Add Meme",form=form)
