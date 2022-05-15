@@ -10,4 +10,10 @@ class Addmeme(Form):
     # status = StringField('Status', default=True)
     # rivacy = SelectField('Display', choices=[('yes','Yes'),('no','No')])   
     image_1 = FileField('Image 1', validators=[FileRequired(), FileAllowed(['jpg','png','gif','jpeg'])])
-    submit = SubmitField('SUBMIT')
+    submit = SubmitField('class=fas fa-search')
+
+
+
+class Search(Form):
+    search = StringField('Search', render_kw={"placeholder": "Search"})
+    submit = SubmitField('Search',render_kw={"class": "fas fa-search"})

@@ -8,7 +8,7 @@ import requests
 import urllib.request, json
 import logging
 from models import Meme,Mention,DirectMessage
-from forms import Addmeme
+from forms import Addmeme,Search
 import os 
 
 
@@ -58,6 +58,34 @@ def download(filename):
 
 @app.route('/home/<string:tag>')
 def findtag(tag):
+    searchform = Search()
+    if request.method == 'POST':
+        tag = request.form['search']
+        memes = Meme.query.filter(Meme.tags.like('%'+tag+'%')).all()
+        payload = {'s': tag, 'api_key': 'BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et'}
+        r = requests.get('http://api.giphy.com/v1/gifs/search?api_key=BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et&q='+tag)
+        r = r.json()
+        # https://api.giphy.com/v1/gifs/search?api_key=BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et&q=man&limit=25&offset=0&rating=g&lang=en
+        url= 'http://api.giphy.com/v1/gifs/search?api_key=BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et&q='+tag
+        response = urllib.request.urlopen(url)
+        mdata = response.read()
+        dict = json.loads(mdata)
+        length = len(dict)
+        print (length)
+        print('start')
+
+        if length > 1:
+        # print(dict.data.images.original.url)
+            for i in range(0, len(dict)):
+
+                title = dict['data'][i]['title']
+                url = dict['data'][i]['images']['original']['url']
+                print (title)
+                print (url)
+                print('start')
+        return render_template('indexnew.html',memes=memes,mentions=mentions,tags=tag,giphys=r,dict=dict,len=length,search='yes',searchform=searchform)
+
+
     # memes = Meme.query.filter_by(tags=tag).all()
     memes = Meme.query.filter(Meme.tags.like('%'+tag+'%')).all()
     mentions = Mention.query.filter_by(tags=tag).all()
@@ -75,7 +103,7 @@ def findtag(tag):
     print (length)
     print('start')
 
-    if dict:
+    if length > 1:
     # print(dict.data.images.original.url)
         for i in range(0, len(dict)):
 
@@ -85,13 +113,15 @@ def findtag(tag):
             print (url)
             print('start')
         # print(r)
-    return render_template('indexnew.html',memes=memes,mentions=mentions,tags=tag,giphys=r,dict=dict,len=length,search='yes')
+    return render_template('indexnew.html',memes=memes,mentions=mentions,tags=tag,giphys=r,dict=dict,len=length,search='yes',searchform=searchform)
 
 
 @app.route('/home/view/<string:id>')
 def view(id):
     # memes = Meme.query.filter_by(tags=tag).all()
     meme = Meme.query.filter_by(id=id).first()
+    meme.views = meme.views + 1
+    db.session.commit()
     if len(id) > 10:
         url = id 
         url= 'http://api.giphy.com/v1/gifs/'+id+'?api_key=BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et'
@@ -103,12 +133,13 @@ def view(id):
     if meme:
         tags= meme.tags
         similar = Meme.query.filter(Meme.tags.like('%'+tags+'%')).all()
-        return render_template('viewmeme.html',meme=meme,similar=similar,leng=leng)
+        return render_template('viewmeme.html',meme=meme,similar=similar)
 
     return render_template('viewmeme.html',meme=meme,url=url,dict=dict)
 
 @app.route('/home')
 def home():
+    searchform = Search()
     # last_id = get_last_tweet(file)
     last_id = "1"
     mentions = api.mentions_timeline( tweet_mode='extended')
@@ -122,11 +153,7 @@ def home():
                 tweet= []
                 new_id = mention.id
                 text = mention.full_text
-                # meme = Meme(description=text,mention_id=new_id)
-                # db.session.add(meme)
-                # db.session.commit()
-                # mention = Mention(mention_id=new_id,full_text=text)
-                #process full_text to get tags to search for
+
                 ntxt=[]
                 txt = []
                 # There is a faster way to do this
@@ -184,16 +211,26 @@ def home():
                 print(message)
                 db.session.add(themessage)
                 db.session.commit()
+                # page = request.args.get('page', 1, type=int)
 
-                memes = Meme.query.filter(Meme.tags.like('%'+tags+'%')).all()
+                ROWS_PER_PAGE = 10
+                page = request.args.get('page', 1, type=int)
+                # genre = Genre.query.paginate(page, ROWS_PER_PAGE, False)
+                # tickets = Ticket.query.paginate(page, ROWS_PER_PAGE, False)
+                # coupon = Couponn.query.paginate(page, ROWS_PER_PAGE, False)
+
+                memes = Meme.query.filter(Meme.tags.like('%'+tags+'%')).paginate(page, 4, False)
+                trending = Meme.query.order_by(Meme.views.desc()).all()
                 domain = "https://www.localhost:5000/home/" + tags 
                 reply =  " Here's your Search results. Click the link below: " + domain
                 api.send_direct_message(sender_id, reply)
-                return render_template("indexnew.html", memes=memes,title="IMG World")
+                return render_template("index.html", memes=memes,title="IMG World",page=page,trending=trending)
 
+    ROWS_PER_PAGE = 2
+    page = request.args.get('page', 1, type=int)
+    trending = Meme.query.order_by(Meme.views.desc()).paginate(page, ROWS_PER_PAGE, False)
 
-
-    return render_template('indexnew.html',title="IMG World",search='no')
+    return render_template('index.html',title="IMG World",search='no',trending=trending,searchform=searchform)
 
 @app.route('/home/gifs/<string:tags>')  
 def search_gif(tags):
@@ -208,9 +245,41 @@ def search_gif(tags):
 
     return r
 
-@app.route('/search')
+@app.route('/search', methods=['GET', 'POST'])
 def search():
-    tags = request.args.get('tags')
+    form = Search()
+    if request.method == 'POST':
+        # tag = request.args.get('search')
+        tag = request.form['search']
+
+        print("the tag is")
+        print(tag)
+        # tag = request.form['search']
+        memes = Meme.query.filter(Meme.tags.like('%'+tag+'%')).all()
+        payload = {'s': tag, 'api_key': 'BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et'}
+        r = requests.get('http://api.giphy.com/v1/gifs/search?api_key=BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et&q='+tag)
+        r = r.json()
+        # https://api.giphy.com/v1/gifs/search?api_key=BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et&q=man&limit=25&offset=0&rating=g&lang=en
+        url= 'http://api.giphy.com/v1/gifs/search?api_key=BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et&q='+tag
+        response = urllib.request.urlopen(url)
+        mdata = response.read()
+        dict = json.loads(mdata)
+        length = len(dict)
+        print (length)
+        print('start')
+
+        if length > 1:
+        # print(dict.data.images.original.url)
+            for i in range(0, len(dict)):
+
+                title = dict['data'][i]['title']
+                url = dict['data'][i]['images']['original']['url']
+                print (title)
+                print (url)
+                print('start')
+        return redirect(url_for('findtag',tag=tag))
+
+        # return render_template('indexnew.html',memes=memes,tags=tag,giphys=r,dict=dict,len=length,search='yes')
 
 
 
@@ -285,39 +354,5 @@ if __name__=='__main__':
 
 
 
-
-# with open('test.gif','wb') as f:
-#     f.write(requests.get(url_gif).content)
-
-
-# direct_messages = tweepy.Cursor(api.direct_messages, since_id=since_id).items()
-
-# for dm in direct_messages:
-#         print dm.text
-
-
-        # <!-- row -->
-        # <!--gihys-
-        # <div class="row tm-mb-90 tm-gallery">
-        #     {% for giphy in dict %}
-        #     {% if giphy %}
-        #     <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-5">
-        #         <figure class="effect-ming tm-video-item">
-        #             <img src="{{giphy.url}}" alt="Image" class="img-fluid">
-        #             <figcaption class="d-flex align-items-center justify-content-center">
-        #                 <h2>Clocks</h2>
-        #                 <a href="{{giphy.url}}">View more</a>
-        #             </figcaption>                    
-        #         </figure>
-        #         <div class="d-flex justify-content-between tm-text-gray">
-        #             <span class="tm-text-gray-light">{{giphy.data[giphy]['images']['original']['url']}}</span>
-        #             <span>{{giphy['title']}}</span>
-        #         </div>
-        #     </div>
-        #         {% endif %}
-        #     {% endfor %}
-
-
-                            # <img src="{{dict['data'][i]['images']['original']['url']}}" alt="Image" class="img-fluid">
-
-        # </div>-->
+# issues 
+# 1. findtag when there is no giphy found causes an error

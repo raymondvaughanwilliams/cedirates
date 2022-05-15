@@ -55,15 +55,24 @@ https://templatemo.com/tm-556-catalog-z
             </div>
         </div>
     </nav>
-
-    <div class="tm-hero d-flex justify-content-center align-items-center" data-parallax="scroll" data-image-src="img/hero.jpg">
+<!----   <div class="tm-hero d-flex justify-content-center align-items-center" data-parallax="scroll" data-image-src="img/hero.jpg">
         <form class="d-flex tm-search-form">
             <input class="form-control tm-search-input" type="search" placeholder="Search" aria-label="Search">
             <button class="btn btn-outline-success tm-search-btn" type="submit">
                 <i class="fas fa-search"></i>
             </button>
         </form>
-    </div>
+    </div> -->
+    <div class="tm-hero d-flex justify-content-center align-items-center" data-parallax="scroll" data-image-src="img/hero.jpg">
+        {% from "_formhelpers.html" import render_field %}
+          <form class="d-flex tm-search-form" method="post" action="{{ url_for('search') }}">
+            {{ searchform.search(class_='form-control tm-search-input') }}
+            {{ searchform.submit(class_='form-control tm-search-input') }}
+  
+              </button>
+          </form>
+      </div>
+
 
     <div class="container-fluid tm-container-content tm-mt-60">
         <div class="row mb-4">

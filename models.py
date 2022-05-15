@@ -12,6 +12,7 @@ class Meme(db.Model):
     description = db.Column(db.String(255), nullable= True)
     type = db.Column(db.String(255), nullable= True)
     image = db.Column(db.String(150), nullable=False, default='image1.jpg')
+    views = db.Column(db.Integer, nullable=True, default=0)
  
 
     def __repr__(self):
