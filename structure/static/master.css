@@ -18,3 +18,38 @@
           text-decoration: none;
       }
  
+      .thumbnails {
+        overflow: hidden;
+      }
+      .thumbnails li {
+        float: left;
+        width: 25%;
+        position: relative;
+        padding: 1px;
+        min-height: 100px;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        overflow: hidden;
+      }
+      .thumbnails li img {
+        max-width: 100%;
+        display: block;
+        position: absolute;
+        max-height: 100px;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        left: 50%;
+      }
+      div.picture1::before {
+        content:url('http://placehold.it/350x150')
+      }​
+      div.picture1 {
+        width:100px; /*width of your image*/
+        height:100px; /*height of your image*/
+        background-image:url('static2/img/hero.jpg');
+        margin:0; /* If you want no margin */
+        padding:0; /*if your want to padding */
+     }
+     
+
+  

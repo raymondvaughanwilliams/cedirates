@@ -226,7 +226,7 @@ def home():
                 api.send_direct_message(sender_id, reply)
                 return render_template("index.html", memes=memes,title="IMG World",page=page,trending=trending)
 
-    ROWS_PER_PAGE = 2
+    ROWS_PER_PAGE = 5
     page = request.args.get('page', 1, type=int)
     trending = Meme.query.order_by(Meme.views.desc()).paginate(page, ROWS_PER_PAGE, False)
 
@@ -352,7 +352,17 @@ def addmeme():
 if __name__=='__main__':
 	app.run(debug=True)
 
-
+    # <div class="row">
+    #          <div class="col-lg-4">
+    #             <div class="thumbnail">
+    #               <a href="{{ url_for('view',id=trend.id) }}">
+    #                 <img src="{{trend.image}}" alt="Lights" style="width:100%">
+    #                 <div class="caption">
+    #                   <p>{{trend.tags}}</p>
+    #                 </div>
+    #               </a>
+    #             </div>
+    #           </div>
 
 # issues 
 # 1. findtag when there is no giphy found causes an error

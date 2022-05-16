@@ -191,7 +191,7 @@ a:hover { color:#009999; }
 
 .tm-hero {
     min-height: 200px;
-    background: transparent;
+    background-image: url('https://media.wired.com/photos/5bb6accf0abf932caf294b18/master/pass/waves-730260985.jpg'); 
 }
 
 .tm-mt-60 { margin-top: 60px; }
