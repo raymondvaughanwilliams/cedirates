@@ -6,11 +6,11 @@ from flask_wtf.file import FileField,FileRequired,FileAllowed
 
 class Addmeme(Form):
     tags = StringField('Tags', [validators.DataRequired()])
-    type = SelectField('Status', choices=[('picture','picture'),('video','video'),('gif','gif')])
+    type = SelectField('Type', choices=[('picture','picture'),('video','video'),('gif','gif')])
     # status = StringField('Status', default=True)
     # rivacy = SelectField('Display', choices=[('yes','Yes'),('no','No')])   
-    image_1 = FileField('Image 1', validators=[FileRequired(), FileAllowed(['jpg','png','gif','jpeg'])])
-    submit = SubmitField('class=fas fa-search')
+    image_1 = FileField('Image 1', validators=[FileRequired(), FileAllowed(['jpg','png','gif','jpeg','mp4','webm'], 'jpg,png,gif,jpeg,mp4,webm only!')])
+    submit = SubmitField('Add')
 
 
 

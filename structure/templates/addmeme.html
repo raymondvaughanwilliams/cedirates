@@ -5,32 +5,41 @@
 
     <div class="container-fluid tm-container-content tm-mt-60">
         <div class="row mb-4">
-            <h2 class="col-6 tm-text-primary">
-                Search results 
-                {% if tags %} 
-               for  {{tags}}
-                {% else%}
-                ""
-                {% endif %}
-            </h2>
+      
             <div class="col-6 d-flex justify-content-end align-items-center">
-                <form action="" class="tm-text-primary">
-                    Page <input type="text" value="1" size="1" class="tm-input-paging tm-text-primary"> of 200
-                </form>
+            
             </div>
         </div>
         <div class="row tm-mb-90 tm-gallery">
         	<div class="container">
                 <div class="row">
                     <div class="col-md-1"></div>
-                        <div class="col-md-10">
-                            <div class="text-center bg-info p-2 h4">Add a product</div>
+                        <div class="col-md-6 offset-2">
+                            <div class="text-center p-2 h4">Add a Meme</div>
                             {% from "_formhelpers.html" import render_field %}
                             <form method="post" action="" enctype="multipart/form-data">
                             <div>
-                                {{ render_field(form.tags, class="form-control") }}
+                                {{ render_field(form.tags, class="form-control",id="livebox") }}
+                                    <p id = "datalist"></p>
+                    
+                                                                 
+                      
+                </div>
+                </div>
+                                {% if related_memes %}
+                                <div id="result"></div>
+                            </div>
+                                <div class="form-group">
+                                    <label for="related_memes">Related Memes</label>
+                                    <select class="form-control" name="related_memes" id="related_memes">
+                                        {% for meme in related_memes %}
+                                            <option value="{{meme.id}}">{{meme.tags}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                {% endif %}
                                 {{ render_field(form.type, class="form-control") }}
-                                {{ render_field(form.image_1, class="form-control") }}
+                                {{ render_field(form.image_1, class_="form-control") }}
             
 
                             <div class="form-group">
@@ -40,7 +49,117 @@
                   <div class="col-md-1"></div>
                 </div>
             </div>
+        </div>
+    </div>
+    {% for img in allimg%}
+    {{img.image}}
+    {% endfor%}
+    </div>
+
+
+    <div class="row tm-mb-90 tm-gallery">
+                <p id = "datalist"></p>
+
+                                             
+            </div>
+        </div>
+    </div>
+
+
+
+    </div>
+      <!-- <div class="container">
+        <br/>
+        <p><h2>Flask MySQL jquery ajax Live Search</h2></p>
+        {% from "_formhelpers.html" import render_field %}
+
+        <form method="post" >
+
+        <input type="text" id="livebox" name="text" class="form-control" placeholder="Find country" autocomplete="off">
+
+        </form>
+     <p id = "datalist"></p>-->
+       
+ 
+    </div>
+
+
+
+
+   <!----<script>
+          {% for img in related_memes%}
+        img.image
+        {% endfor%}
+        $(document).ready(function(){
+          load_data();
+          function load_data(query)
+          {
+           $.ajax({
+            url:"/ajaxlivesearch",
+            method:"POST",
+            data:{query:query},
+            success:function(data)
+            {
+              $('#result').html(data);
+              $("#result").append(data.htmlresponse);
+            }
+           });
+          }
+          $('#search_text').keyup(function(){
+            var search = $(this).val();
+            if(search != ''){
+            load_data(search);
+           }else{
+            load_data();
+           }
+          });
+        });
+              {% for img in memeimg%}
+                                        img
+                                        {% endfor%}
+        +value.item+
+        </script>-->
+
              <!-- row -->
-      
+             <script>
+                $(document).ready(function(){
+                    $("#livebox").on("input",function(e){
+                        $("#datalist").empty();
+                        $.ajax({
+                            method:"post",
+                            url:"/livesearch",
+                            data:{text:$("#livebox").val()},
+                            success:function(res){
+                                var data = "<div class='row'>Similar memes: <p><div class='col-md-3'>";
+                                $.each(res.allimg,function(index,value){
+                                    data += " <div class='thumbnails'  ><img src ="+value+" alt='...' class='img-fluid' style='max-width: 100%; height: 250px;'></p>";
+                                });
+                                data += "</div>";
+                                $("#datalist").html(data);
+                            }
+                        });
+                    });
+                });
+            </script> 
+          <!----<script>
+                $(document).ready(function(){
+                    $("#livebox").on("input",function(e){
+                        $("#datalist").empty();
+                        $.ajax({
+                            method:"post",
+                            url:"/livesearch",
+                            data:{text:$("#livebox").val()},
+                            success:function(res){
+                                var data = "<div class='list-group'>";
+                                $.each(res.allimg,function(index,value){
+                                    data += "<p class='list-group-item list-group-item-action'>"+value+"</p>";
+                                });
+                                data += "</div>";
+                                $("#datalist").html(data);
+                            }
+                        });
+                    });
+                });
+            </script>-->
 
 {% endblock %}

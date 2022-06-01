@@ -16,7 +16,16 @@ class Meme(db.Model):
  
 
     def __repr__(self):
-        return '<Addproduct %r>' % self.tags
+        return '<Meme %r>' % self.tags
+
+    @property
+    def serialize(self):
+
+        return {"id": self.id,"tags": self.tags,"many2many": self.serialize_many2many}
+
+    @property
+    def serialize_many2many(self):
+        return [item.serialize for item in self.many2many]
 
 
 

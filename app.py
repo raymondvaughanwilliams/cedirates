@@ -1,10 +1,12 @@
 from unittest import removeResult
-from flask import Flask, render_template, request,redirect,url_for,flash
+from wsgiref.handlers import read_environ
+from flask import Flask, render_template, request,redirect,url_for,flash,jsonify
 from structure import db,app,api,logger,photos,basedir
 from flask import send_from_directory,send_file
 import tweepy
 import secrets
 import requests
+import datetime
 import urllib.request, json
 import logging
 from models import Meme,Mention,DirectMessage
@@ -120,8 +122,8 @@ def findtag(tag):
 def view(id):
     # memes = Meme.query.filter_by(tags=tag).all()
     meme = Meme.query.filter_by(id=id).first()
-    meme.views = meme.views + 1
-    db.session.commit()
+    print(meme)
+    # global similar
     if len(id) > 10:
         url = id 
         url= 'http://api.giphy.com/v1/gifs/'+id+'?api_key=BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et'
@@ -129,12 +131,20 @@ def view(id):
         mdata = response.read()
         dict = json.loads(mdata)
         leng = len(dict)
-        print(dict)
+        # print(dict)
     if meme:
         tags= meme.tags
-        similar = Meme.query.filter(Meme.tags.like('%'+tags+'%')).all()
+        print("Tags:")
+        print(tags)
+        tag = tags.split(',')
+        meme.views = meme.views + 1
+        db.session.commit()
+        for t in tag:
+            similar = Meme.query.filter(Meme.tags.like('%'+t+'%')).order_by(Meme.views.desc()).all()
+        # print(len(similar))
+        print(similar)
         return render_template('viewmeme.html',meme=meme,similar=similar)
-
+    
     return render_template('viewmeme.html',meme=meme,url=url,dict=dict)
 
 @app.route('/home')
@@ -316,9 +326,86 @@ def addmeme():
 
 
 
+@app.route("/livesearch",methods=["POST","GET"])
+def livesearch():
+    form = Addmeme()
+    search_word = request.form.get("text")
+    print(search_word)
+    related_memes = Meme.query.filter(Meme.tags.like('%'+search_word+'%')).all()
+    print(related_memes)
+
+    # rm = []
+    for m in related_memes:
+        rm=[]  
+        rm.append(m.image)
+    print("m:")
+    print(rm)
+    # rm= json.loads(related_memes)
+    print("type is:")
+    print(type(related_memes))
+    print("Dir thingy:")
+    # print(related_memes[0].__dict__)
+    fmemes = related_memes[0].__dict__
+    print(related_memes)
+    if len(related_memes) > 0:
+        found="yes"
+    else:
+        found="no"
+    final_memes = []
+    allimg = []
+    for rel in related_memes:
+        # if type of rel is datetime 
+        # if isinstance(rel, datetime.date)
+        # if type(rel.datetime) != datetime.date:
+        rel.pub_date = rel.pub_date.strftime("%d-%m-%Y")
+        # print("typee is:")
+        # print(rel.pub_date)
+        # print(type(rel.pub_date))
+        final_memes.append(rel)
+        final_memes = final_memes
+        # print("final_memes:")
+        # print(final_memes)
+        # print("image:")
+        allimg.append(rel.image)
+
+        memeimg= rel.image
+        print("image:")
+        print(memeimg)
+        # print(len(final_memes))
+        # print(final_memes[0].__dict__)
+        # print(final_memes.pub_date)fm
+    print("image list:")
+    print(allimg)   
+    print("type is:")
+    print(type(allimg))
+    return jsonify({'allimg':allimg})
+    # return allimg
+
+
+
+
+
+    print(type(related_memes))
+
+
+
+    # return render_template('addmeme.html',found=found,final_memes=final_memes,rm=rm,related_memes=related_memes,form=form,allimg=allimg)
+    
+
+    # return jsonify({'htmlresponse': render_template('addmeme.html', memeimg=memeimg,rm=rm,alimg=allimg)})
+
+    # return jsonify(rel=[i.serialize for i in related_memes],found=found)    
+    # return jsonify("related_memes" : [item for item.__dict__ in related_memes])
+    # return jsonify(json_list=[i.serialize for i in qryresult.all()])       
+
+
+
+
+
+
 # @app.route('/', methods=['GET'])
 # @app.route('/search', methods=['GET'])
-# def index():
+# def index():)
 #     form = SearchForm(request.args)
 #     query = request.args.get(text, None)
 #     table = None
@@ -363,6 +450,25 @@ if __name__=='__main__':
     #               </a>
     #             </div>
     #           </div>
+
+# RELATED PHOTOS
+        #     {% for meme in similar%}
+        #     <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-5">
+        #         <figure class="effect-ming tm-video-item">
+        #             <img src="{{meme.image}}" alt="Image" class="img-fluid">
+        #             <figcaption class="d-flex align-items-center justify-content-center">
+        #                 <h2>Hangers</h2>
+        #                 <a href="#">View more</a>
+        #             </figcaption>                    
+        #         </figure>
+        #         <div class="d-flex justify-content-between tm-text-gray">
+        #             <span class="tm-text-gray-light">16 Oct 2020</span>
+        #             <span>{{meme.tags}}</span>
+        #         </div>
+        #     </div>
+        #     {{meme.tags}}
+        # {% endfor %}
+
 
 # issues 
 # 1. findtag when there is no giphy found causes an error
