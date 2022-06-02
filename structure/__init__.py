@@ -6,10 +6,25 @@ from flask_migrate import Migrate
 import requests
 import logging
 import os
+from flask_msearch import Search
+
+from whoosh.qparser import OrGroup
+from whoosh.qparser import AndGroup
+from whoosh.qparser import MultifieldParser
+from whoosh.analysis import StemmingAnalyzer
+import whoosh.index
+from whoosh.fields import Schema
+
 
 
 
 app = Flask(__name__)
+
+
+
+
+
+
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 

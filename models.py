@@ -4,7 +4,7 @@ from functools import wraps
 
 
 class Meme(db.Model):
-    __seachbale__ = ['name','description']
+    __searchable__ = ['tags', 'description'] 
     id = db.Column(db.Integer, primary_key=True)
     mention_id = db.Column(db.String, nullable=True)
     tags = db.Column(db.Text, nullable=True)

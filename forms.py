@@ -14,6 +14,6 @@ class Addmeme(Form):
 
 
 
-class Search(Form):
+class Searchform(Form):
     search = StringField('Search', render_kw={"placeholder": "Search"})
     submit = SubmitField('Search',render_kw={"class": "fas fa-search"})
