@@ -1,7 +1,7 @@
 from unittest import removeResult
 from wsgiref.handlers import read_environ
 from flask import Flask, render_template, request,redirect,url_for,flash,jsonify
-from structure import db,app,api,logger,photos,basedir
+from structure import db,app,api,logger,photos,basedir,consumer_key,consumer_secret,access_token, access_token_secret
 from flask import send_from_directory,send_file
 import tweepy
 import secrets
@@ -17,39 +17,57 @@ from whoosh.fields import *
 from flask_msearch import Search
 
 
-# api key = RLYya4IiZvpFkLfn5pItSqPhW
-# api secret= UaAjhhNYTmSB6FwCqEc5RDTkSB0dT2Y81jxCUFaqVGKht156Xd
-# bearer_token = AAAAAAAAAAAAAAAAAAAAAOqEbgEAAAAABLp1X6nGWW2nXjYjgBjQ5VYCqSQ%3DpVZpzJVo4Bvy8GNQYeJA0fHcFEfkOlWSQUntNCncRmRC1BgF92
-# access_token = 944709207038754816-pOXaIltIHr7rrORJiEOdcehpi6xUmZV
-# access_token_secret = MhECXNlbr4F4ZfxMHz4iXgbpmhMcFWWMeEQYcsFxR1PwM
+#stream from tweepy 
+stream = tweepy.Stream(
+   consumer_key, consumer_secret,
+  access_token, access_token_secret
+)
 
-# app.route('/download/<path:filename>', methods=['GET', 'POST'])
-# def download():
-#     if request.method == 'POST':
-#         url = request.form['url']
-# when backend is elasticsearch, MSEARCH_INDEX_NAME is unused
-# flask-msearch will use table name as elasticsearch index name unless set __msearch_index__
-MSEARCH_INDEX_NAME = 'msearch'
-# simple,whoosh,elaticsearch, default is simple
-MSEARCH_BACKEND = 'whoosh'
-# table's primary key if you don't like to use id, or set __msearch_primary_key__ for special model
-MSEARCH_PRIMARY_KEY = 'id'
-# auto create or update index
-MSEARCH_ENABLE = True
-# logger level, default is logging.WARNING
-# SQLALCHEMY_TRACK_MODIFICATIONS must be set to True when msearch auto index is enabled
-# when backend is elasticsearch
-# ELASTICSEARCH = {"hosts": ["127.0.0.1:9200"]}
+class IDPrinter(tweepy.Stream):
+
+    def on_status(self, status):
+        # mentions =stream.filter(track=['python'])
+        print(status.text)
+        statustext = status.text
+        new_id = status.id
+        screen_name = status.user.screen_name
+        if " " in statustext:
+            text = statustext.replace(" ","-")
+                    
+        ntxt=[]
+        txt = []
+        for x in text.split("-"):
+            if x.startswith("@"):
+                ntxt.append(x)
+            else:
+                txt.append(x)
+        print(txt)
+        tags = '-'.join(txt)
+        print("tags:")
+        print(tags)
+        themention = Mention(mention_id=new_id,full_text=statustext,tags=tags)
+        db.session.add(themention)
+        db.session.commit()
+        domain = "localhost:5000/home/" + tags 
+        url = domain + text
+        api.update_status('@' + status.user.screen_name + " Here's your Search results. Click the link below: " + domain)
 
 
-search = Search()
-search.init_app(app)
+printer = IDPrinter(
+  consumer_key, consumer_secret,
+  access_token, access_token_secret
+)
+printer.filter(track=['@rv__williams'])
+mention = printer.filter(track=['@rv__williams'])
+print("mention:")
+print(mention)
+
 
 
 __searchable__ = '__searchable__'
-DEFAULT_WHOOSH_INDEX_NAME = 'whoosh_index'
+# DEFAULT_WHOOSH_INDEX_NAME = 'whoosh_index'
 
-
+#download image route
 @app.route('/download/<path:filename>', methods=['GET', 'POST'])
 def download(filename):
     if 'static/images' in filename:
@@ -63,37 +81,39 @@ def download(filename):
         dict = json.loads(mdata)
         image= dict['data']['images']['original']['url']
         uploads =  os.path.join(basedir, 'static/images/')
-        
-
         # print(image+'imageofgiphy')
-
         with open(filename +'.gif', 'w') as f:
             f.write(image)
         urllib.request.urlretrieve(image, uploads + filename +'.gif')
-
         url = image
         response = requests.get(url)
         data = response.content
-
         return send_file(uploads + filename +'.gif', as_attachment=True)
  
 
 
 
-
+#find the image in the database using tags from search or url
 @app.route('/home/<string:tag>')
 def findtag(tag):
     searchform = Searchform()
+
+    #check for spaces in the tag from url
     if " " or "%" in tag:
         giphytag = tag.replace(" ","-")
+    #from search find tag
     if request.method == 'POST':
+
+        #check for spaces in the tag from search
         tag = request.form['search']
         if " " or "%" in tag:
             giphytag = tag.replace(" ","-")
-        # memes = whoosh_search(tag)
-        memes = Meme.query.filter(Meme.tags.like('%'+tag+'%')).all()
-        # memes = Meme.query.msearch(tag,fields=['tags'],limit=20).all()
 
+        # memes = whoosh_search(tag) #search for the tag in the database using whoosh
+        memes = Meme.query.filter(Meme.tags.like('%'+tag+'%')).all()
+        # memes = Meme.query.msearch(tag,fields=['tags'],limit=20).all() #search for the tag in the database using msearch
+
+        #search for meme using giphy api
         payload = {'s': tag, 'api_key': 'BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et'}
         r = requests.get('http://api.giphy.com/v1/gifs/search?api_key=BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et&q='+giphytag)
         r = r.json()
@@ -102,29 +122,30 @@ def findtag(tag):
         response = urllib.request.urlopen(url)
         mdata = response.read()
         dict = json.loads(mdata)
-        length = len(dict)
-
         dictdata = dict['data']
         dictdatalen = len(dict['data'])
 
+        #if giphy api returns results save the title and image url for no reason
         if dictdatalen > 0:
         # print(dict.data.images.original.url)
             for i in range(0, len(dict)):
-
                 title = dict['data'][i]['title']
                 url = dict['data'][i]['images']['original']['url']
    
-                
-        return render_template('indexnew.html',memes=memes,mentions=mentions,tags=tag,giphys=r,dict=dict,len=length,search='yes',searchform=searchform,dictdata=dictdata,dictdatalen=dictdatalen)
+        return render_template('indexnew.html',memes=memes,tags=tag,giphys=r,dict=dict,search='yes',searchform=searchform,dictdata=dictdata,dictdatalen=dictdatalen,page=page,)
 
 
-    # memes = Meme.query.filter_by(tags=tag).all()
 
-    memes = Meme.query.filter(Meme.tags.like('%'+tag+'%')).all()
-    # memes = whoosh_search(tag)
-    mentions = Mention.query.filter_by(tags=tag).all()
-    # print (tag)
-    # print (memes)
+    ROWS_PER_PAGE = 10
+    page = request.args.get('page', 1, type=int)
+
+
+    memes = Meme.query.filter(Meme.tags.like('%'+tag+'%')).paginate(page, 4, False)
+
+    #from url find meme
+    # memes = Meme.query.filter(Meme.tags.like('%'+tag+'%')).all()
+    # mentions = Mention.query.filter_by(tags=tag).all()
+    # search for meme with giphy api
     payload = {'s': tag, 'api_key': 'BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et'}
     r = requests.get('http://api.giphy.com/v1/gifs/search?api_key=BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et&q='+giphytag)
     r = r.json()
@@ -134,66 +155,61 @@ def findtag(tag):
     mdata = response.read()
     dict = json.loads(mdata)
     length = len(dict)
-
     dictdata = dict['data']
     dictdatalen = len(dict['data'])
-
-    
-
+    #if giphy api returns results save the title and image url for no reason
     if dictdatalen > 0:
         results="yes"
     # print(dict.data.images.original.url)
         for i in range(0, len(dict)):
-
             title = dict['data'][i]['title']
             url = dict['data'][i]['images']['original']['url']
-  
     else:
         results="no"
-        
-    print (results)
-        # print(r)
-    return render_template('indexnew.html',memes=memes,mentions=mentions,tags=tag,giphys=r,dict=dict,len=length,search='yes',searchform=searchform,dictdata=dictdata,dictdatalen=dictdatalen,results=results)
+
+    return render_template('indexnew.html',memes=memes,tags=tag,giphys=r,dict=dict,len=length,search='yes',searchform=searchform,dictdata=dictdata,dictdatalen=dictdatalen,results=results,page=page)
 
 
+
+
+
+#view meme by id
 @app.route('/home/view/<string:id>')
 def view(id):
     # memes = Meme.query.filter_by(tags=tag).all()
     meme = Meme.query.filter_by(id=id).first()
     print(meme)
-    # global similar
+    #using lenth of id to check if id is from giphy api or from database
     if len(id) > 10:
         url = id 
         url= 'http://api.giphy.com/v1/gifs/'+id+'?api_key=BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et'
         response = urllib.request.urlopen(url)
         mdata = response.read()
         dict = json.loads(mdata)
-        leng = len(dict)
-        # print(dict)
+    #if there is a meme found split the tag and add a view to views counter and also search for similar memes
     if meme:
         tags= meme.tags
-        print("Tags:")
-        print(tags)
         tag = tags.split(',')
         meme.views = meme.views + 1
         db.session.commit()
         for t in tag:
             similar = Meme.query.filter(Meme.tags.like('%'+t+'%')).order_by(Meme.views.desc()).all()
-        # print(len(similar))
-        print(similar)
         return render_template('viewmeme.html',meme=meme,similar=similar)
     
     return render_template('viewmeme.html',meme=meme,url=url,dict=dict)
 
+
+
+#Home route
 @app.route('/home')
 def home():
     searchform = Searchform()
-    # last_id = get_last_tweet(file)
-    last_id = "1"
+    # use tweepy mention api to get mentions
     mentions = api.mentions_timeline( tweet_mode='extended')
     if len(mentions) == 0:
         return
     else:
+        #if mention is found look through all mentions and if 'qqq' is found save the tweet id and the tweet text
         for mention in mentions:
             # print(mention)
             mention_check = Mention.query.filter_by(mention_id=mention.id).first()
@@ -204,7 +220,7 @@ def home():
 
                 ntxt=[]
                 txt = []
-                # There is a faster way to do this
+                # Process text from mention and save it to db.There is a faster way to do this.
                 for x in text.split():
                     if x.startswith("@"):
                         ntxt.append(x)
@@ -214,14 +230,13 @@ def home():
                         txt.append(x)
                 for tex in txt:
                     tags= ''.join(tex)
-                    # print(tags)
                 themention = Mention(mention_id=new_id,full_text=text,tags=tags)
                 db.session.add(themention)
                 db.session.commit()
-
                 # meme = Meme.query.filter_by(tags=text).first()
                 memes = Meme.query.filter(Meme.tags.like('%'+tags+'%')).all()
                 # memes = whoosh_search(tags)
+                # process reply and use tweepy to send reply
                 domain = "localhost:5000/home/" + tags 
                 url = domain + text
                 # console.log(text)
@@ -230,6 +245,7 @@ def home():
         since_id = "1520898332213850118"
         count = "10"
         # print("Start")
+        # if direct message is found look through all dms and if 'qqq' is found save the tweet id and the tweet text   
         direct_messages = api.get_direct_messages(count=10)
         # print(len(direct_messages))
         count == 0
@@ -246,7 +262,7 @@ def home():
                 #process full_text to get tags to search for
                 ntxt=[]
                 txt = []
-                # There is a faster way to do this
+                # Process tags and save to db. There is a faster way to do this
                 for x in text.split():
                     if x.startswith("qqq"):
                         ntxt.append(x)
@@ -258,16 +274,16 @@ def home():
                 themessage= DirectMessage(message_id=dm_id,text=tags,sender_id=sender_id)
                 db.session.add(themessage)
                 db.session.commit()
-                # page = request.args.get('page', 1, type=int)
 
+                # pagination
                 ROWS_PER_PAGE = 10
                 page = request.args.get('page', 1, type=int)
-                # genre = Genre.query.paginate(page, ROWS_PER_PAGE, False)
-                # tickets = Ticket.query.paginate(page, ROWS_PER_PAGE, False)
-                # coupon = Couponn.query.paginate(page, ROWS_PER_PAGE, False)
+
 
                 memes = Meme.query.filter(Meme.tags.like('%'+tags+'%')).paginate(page, 4, False)
                 trending = Meme.query.order_by(Meme.views.desc()).all()
+
+                #process and send reply with tweepy
                 domain = "https://www.localhost:5000/home/" + tags 
                 reply =  " Here's your Search results. Click the link below: " + domain
                 api.send_direct_message(sender_id, reply)
@@ -276,9 +292,18 @@ def home():
     ROWS_PER_PAGE = 5
     page = request.args.get('page', 1, type=int)
     trending = Meme.query.order_by(Meme.views.desc()).paginate(page, ROWS_PER_PAGE, False)
-
+    print("me:")
+    print(memes)
     return render_template('index.html',title="IMG World",asearchh='no',trending=trending,searchform=searchform)
 
+
+
+
+
+
+
+
+#earch gif route. Unused
 @app.route('/home/gifs/<string:tags>')  
 def search_gif(tags):
     #get a GIF that is similar to text sent
@@ -289,23 +314,24 @@ def search_gif(tags):
     # print(r)
     # url = r['data']['images']['original']['url']
     # print(url)
-
     return r
 
+
+
+
+
+#search route. From search bar
 @app.route('/search', methods=['GET', 'POST'])
 def search():
 
-    form = Search()
+    form = Searchform()
     if request.method == 'POST':
-        # tag = request.args.get('search')
         tag = request.form['search']
+        #replace spaces with - for giphy search
         if " " or "%" in tag:
             giphytag = tag.replace(" ","-")
-
-        print("the tag is")
-        print(tag)
-        # tag = request.form['search']
         # memes = Meme.query.msearch(tag,fields=['tags'],limit=20).all()
+        #search for memes in giphy db 
         memes = Meme.query.filter(Meme.tags.like('%'+tag+'%')).all()
         payload = {'s': tag, 'api_key': 'BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et'}
         r = requests.get('http://api.giphy.com/v1/gifs/search?api_key=BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et&q='+giphytag)
@@ -318,34 +344,27 @@ def search():
         length = len(dict)
         dictdata = dict['data']
         dictdatalen = len(dict['data'])
-
-
+        # if result found savee the title and url for no reason
         if dictdata:
-
             for i in range(0, dictdatalen):
-
-                # title = dict['data'][i]['title']
-                # url = dict['data'][i]['images']['original']['url']
                 title = dict['data'][i]['title']
                 url = dict['data'][i]['images']['original']['url']
-
         else:
             print("empty")
         return redirect(url_for('findtag',tag=tag))
 
-        # return render_template('indexnew.html',memes=memes,tags=tag,giphys=r,dict=dict,len=length,search='yes')
 
 
 
-
+#unused
 @app.route('/add', methods=['POST'])
 def add():
     if request.method == 'POST':
         text = request.form['text']
 
 
+#check if file format is allowed
 allowed_extensions = ['png', 'jpg', 'jpeg', 'gif']
-
 def check_file_extension(filename):
     return filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
@@ -355,42 +374,32 @@ def check_file_extension(filename):
 def addmeme():
     form = Addmeme()
     # form.genre.choices = [(g.id, g.name) for g in Genre.query.filter_by(id='1').all()]
+    #process data and save it to db 
     if request.method == 'POST' and 'image_1' in request.files:
         tags = form.tags.data
         type = form.type.data
         image_1 = photos.save(request.files['image_1'], name=secrets.token_hex(10) + ".")
         img= "/static/images/"+image_1
-        # if " " in tags:
-        #     tags = tags.replace(" ","-")
+        #check file format
         if check_file_extension(image_1):
             meme = Meme(tags=tags,type=type,image=img)
             db.session.add(meme)
             db.session.commit()
-        flash(f'Ticket added successfully','success')
+        flash(f'Meme added successfully','success')
         return redirect(url_for('home'))
     return render_template('addmeme.html',title ="Add Meme",form=form)
 
 
-
+#livesearch route. To display related memes via ajax when adding a new meme
 @app.route("/livesearch",methods=["POST","GET"])
 def livesearch():
     form = Addmeme()
     search_word = request.form.get("text")
     related_memes = Meme.query.filter(Meme.tags.like('%'+search_word+'%')).all()
-
-    # rm = []
     for m in related_memes:
         rm=[]  
         rm.append(m.image)
-    # print("m:")
-    # print(rm)
-    # # rm= json.loads(related_memes)
-    # print("type is:")
-    # print(type(related_memes))
-    # print("Dir thingy:")
-    # print(related_memes[0].__dict__)
     fmemes = related_memes[0].__dict__
-    # print(related_memes)
     if len(related_memes) > 0:
         found="yes"
     else:
@@ -403,112 +412,21 @@ def livesearch():
  
         final_memes.append(rel)
         final_memes = final_memes
-        # print("final_memes:")
-        # print(final_memes)
-        # print("image:")
         allimg.append(rel.image)
-
+        allimg = allimg[0:6]
         memeimg= rel.image
-        print("image:")
-        print(memeimg)
-        # print(len(final_memes))
-        # print(final_memes[0].__dict__)
-        # print(final_memes.pub_date)fm
-    # print("image list:")
-    # print(allimg)   
-    # print("type is:")
-    # print(type(allimg))
     return jsonify({'allimg':allimg})
-    # return allimg
+
+  
 
 
 
 
 
-    print(type(related_memes))
-
-
-
-    # return render_template('addmeme.html',found=found,final_memes=final_memes,rm=rm,related_memes=related_memes,form=form,allimg=allimg)
-    
-
-    # return jsonify({'htmlresponse': render_template('addmeme.html', memeimg=memeimg,rm=rm,alimg=allimg)})
-
-    # return jsonify(rel=[i.serialize for i in related_memes],found=found)    
-    # return jsonify("related_memes" : [item for item.__dict__ in related_memes])
-    # return jsonify(json_list=[i.serialize for i in qryresult.all()])       
-
-
-
-
-
-
-# @app.route('/', methods=['GET'])
-# @app.route('/search', methods=['GET'])
-# def index():)
-#     form = SearchForm(request.args)
-#     query = request.args.get(text, None)
-#     table = None
-#     if query is not None:
-#         items = Meme.query.filter(Meme.tags.like('%'+query+'%')).all()
-#         table = ItemTable(items)
-#     return render_template('index.html', form=form, query=query, table=table)
-
-# def respondToTweet(file):
-#     last_id = get_last_tweet(file)
-#     mentions = api.mentions_timeline(last_id, tweet_mode='extended')
-#     if len(mentions) == 0:
-#         return
-#     else:
-#         for mention in reversed(mentions):
-#             tweet= []
-#             new_id = mention.id
-#             text = mention.full_text
-#             meme = Meme(tags=text)
-#             db.session.add(meme)
-#             db.session.commit()
-#             # meme = Meme.query.filter_by(tags=text).first()
-#             memes = Meme.query.filter(Meme.tags.contains(text))
-#             domain = "localhost/home"
-#             url = domain + text
-#             console.log(text)
-        
-
-#             api.update_status('@' + mention.user.screen_name + " Here's your Search results. Click the link below: " + "/n" + url, mention.id)
 
 if __name__=='__main__':
 	app.run(debug=True)
 
-    # <div class="row">
-    #          <div class="col-lg-4">
-    #             <div class="thumbnail">
-    #               <a href="{{ url_for('view',id=trend.id) }}">
-    #                 <img src="{{trend.image}}" alt="Lights" style="width:100%">
-    #                 <div class="caption">
-    #                   <p>{{trend.tags}}</p>
-    #                 </div>
-    #               </a>
-    #             </div>
-    #           </div>
-
-# RELATED PHOTOS
-        #     {% for meme in similar%}
-        #     <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-5">
-        #         <figure class="effect-ming tm-video-item">
-        #             <img src="{{meme.image}}" alt="Image" class="img-fluid">
-        #             <figcaption class="d-flex align-items-center justify-content-center">
-        #                 <h2>Hangers</h2>
-        #                 <a href="#">View more</a>
-        #             </figcaption>                    
-        #         </figure>
-        #         <div class="d-flex justify-content-between tm-text-gray">
-        #             <span class="tm-text-gray-light">16 Oct 2020</span>
-        #             <span>{{meme.tags}}</span>
-        #         </div>
-        #     </div>
-        #     {{meme.tags}}
-        # {% endfor %}
-
-
+  
 # issues 
 # 1. findtag when there is no giphy found causes an error

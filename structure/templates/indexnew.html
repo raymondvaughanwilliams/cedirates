@@ -32,21 +32,22 @@
             </h2>
             <div class="col-6 d-flex justify-content-end align-items-center">
                 <form action="" class="tm-text-primary">
-                    Page <input type="text" value="1" size="1" class="tm-input-paging tm-text-primary"> of 200
+                    Page <input type="text" value="{{ memes.page }}" size="1" class="tm-input-paging tm-text-primary"> of {{ memes.pages }}
+
                 </form>
             </div>
         </div>
         <div class="row tm-mb-90 tm-gallery">
    
-            {% for meme in memes %}
+            {% for meme in memes.items %}
          {% if meme %}
         	<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-5">
                 <div class="thumbnails"  >
                 <figure class="effect-ming tm-video-item">
                     <a class="btn"  href="{{ url_for('view',id=meme.id) }}"><img src="{{meme.image}}" alt="..." class="img-fluid" style="max-width: 100%; height: 250px;"></a>
                                         <figcaption class="d-flex align-items-center justify-content-center">
-                        <h2>{{meme.tags}}</h2>
-                        <a href="photo-detail.html">View more</a>
+                        <h2>View</h2>
+                        <a href="{{ url_for('view',id=meme.id) }}">View more</a>
                     </figcaption>                    
                 </figure>
                 <div class="d-flex justify-content-between tm-text-gray">
@@ -62,7 +63,9 @@
             {% endfor %}
         </div>
 
-
+        <h2 class="col-6 tm-text-primary">
+            Search results from giphy
+        </h2>
         <div class="row tm-mb-90 tm-gallery">
             {% if search == 'yes' and results=='yes' %}
             {% for i in range(0,len) %}
@@ -87,19 +90,34 @@
             </div>
             {% endif %}
 
-        <div class="row tm-mb-90">
-            <div class="col-12 d-flex justify-content-between align-items-center tm-paging-col">
-                <a href="javascript:void(0);" class="btn btn-primary tm-btn-prev mb-2 disabled">Previous</a>
-                <div class="tm-paging d-flex">
-                    <a href="javascript:void(0);" class="active tm-paging-link">1</a>
-                    <a href="javascript:void(0);" class="tm-paging-link">2</a>
-                    <a href="javascript:void(0);" class="tm-paging-link">3</a>
-                    <a href="javascript:void(0);" class="tm-paging-link">4</a>
-                </div>
-                <a href="javascript:void(0);" class="btn btn-primary tm-btn-next">Next Page</a>
-            </div>            
-        </div>
-    </div> <!-- container-fluid, tm-container-content -->
+            <div class="row tm-mb-90">
+                <div class="col-12 d-flex justify-content-between align-items-center tm-paging-col">
+                  <a href="{{ url_for('home', page=memes.prev_num) }}"
+                  class="btn btn-primary tm-btn-prev mb-2 disabled
+                  {% if memes.page == 1 %}disabled{% endif %}">
+                   &laquo;Previous
+               </a>
+                         <div class="tm-paging d-flex">
+                          {% for page_num in memes.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}{% if page_num %}
+                          <!-- Check for the active page and set the link to "Active"-->
+                                   {% if memes.page == page_num %}
+                        <a href="{{ url_for('home', page=page_num) }}" class="active tm-paging-link">{{ page_num }}</a>
+                                    {% else %}
+                                    <a href="{{ url_for('home', page=page_num) }}" class="tm-paging-link">{{ page_num }}</a>
+                                    {% endif %}
+                                {% else %}
+                                    ...
+                                {% endif %}
+                            {% endfor %}
+          
+                    </div>
+                    <a href="{{ url_for('home', page=memes.next_num) }}" class="btn btn-primary tm-btn-next   {% if memes.page == memes.pages %}disabled{% endif %}">Next Page</a>
+                </div>         
+                <p class="text-right mt-3">
+                  Showing page {{ memes.page }} of {{ memes.pages }}
+                 </p>   
+            </div>
+          </div><!-- container-fluid, tm-container-content -->
 
 </div>
 </div>
