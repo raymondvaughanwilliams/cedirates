@@ -17,7 +17,7 @@ from whoosh.fields import *
 from flask_msearch import Search
 
 
-#stream from tweepy 
+# stream from tweepy 
 stream = tweepy.Stream(
    consumer_key, consumer_secret,
   access_token, access_token_secret
@@ -50,17 +50,36 @@ class IDPrinter(tweepy.Stream):
         db.session.commit()
         domain = "localhost:5000/home/" + tags 
         url = domain + text
-        api.update_status('@' + status.user.screen_name + " Here's your Search results. Click the link below: " + domain)
+        api.update_status('@' + screen_name + " Here's your Search results. Click the link below: " + domain)
+        return True
+
+
+    def on_direct_message( self, direct_message ):    
+            
+        print(direct_message)
+
+        author = direct_message.author.screen_name
+        print(direct_message.text)
+        api.send_direct_message(screen_name=author, text='response') ['message_data']['text']
+
+    #     return True
+
+    # def on_data( self, data ):
+    #     # print(dms)
+    #     print("This is the message received: ", data)
+
 
 
 printer = IDPrinter(
   consumer_key, consumer_secret,
   access_token, access_token_secret
 )
-printer.filter(track=['@rv__williams'])
-mention = printer.filter(track=['@rv__williams'])
-print("mention:")
-print(mention)
+printer.filter(track=['@rv__williams'],threaded=True)
+# mention = printer.filter(track=['@rv__williams'])
+
+# printer.filter(follow=['@rv__williams'])
+# print("mention:")
+# print(mention)
 
 
 
@@ -292,8 +311,7 @@ def home():
     ROWS_PER_PAGE = 5
     page = request.args.get('page', 1, type=int)
     trending = Meme.query.order_by(Meme.views.desc()).paginate(page, ROWS_PER_PAGE, False)
-    print("me:")
-    print(memes)
+  
     return render_template('index.html',title="IMG World",asearchh='no',trending=trending,searchform=searchform)
 
 
