@@ -27,7 +27,6 @@ class IDPrinter(tweepy.Stream):
 
     def on_status(self, status):
         # mentions =stream.filter(track=['python'])
-        print(status.text)
         statustext = status.text
         new_id = status.id
         screen_name = status.user.screen_name
@@ -41,10 +40,7 @@ class IDPrinter(tweepy.Stream):
                 ntxt.append(x)
             else:
                 txt.append(x)
-        print(txt)
         tags = '-'.join(txt)
-        print("tags:")
-        print(tags)
         themention = Mention(mention_id=new_id,full_text=statustext,tags=tags)
         db.session.add(themention)
         db.session.commit()
