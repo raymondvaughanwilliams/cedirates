@@ -53,6 +53,7 @@ class DirectMessage(db.Model):
 
 
 
+db.create_all()
 
 
 
