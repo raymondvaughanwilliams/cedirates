@@ -60,13 +60,17 @@ logger.setLevel(logging.INFO)
 
 
 
-consumer_key = os.environ.get('twitter_consumer_key')
-consumer_secret = os.environ.get('twitter_consumer_secret')
-access_token = os.environ.get('twitter_access_token')
-access_token_secret = os.environ.get('twitter_access_token_secret')
+# consumer_secret = os.environ.get('twitter_consumer_secret')
+# access_token = os.environ.get('twitter_access_token')
+# access_token_secret = os.environ.get('twitter_access_token_secret')
+consumer_key = "TLhUlcuYQ9UzwvFyfEzcwoRGY"
+consumer_secret= "zSRMSeeAWvmF3A9iYfJNuel7iovnqBhAT20a9BZQeTTF8FbJHJ"
+# bearer_token =AAAAAAAAAAAAAAAAAAAAAJWMbgEAAAAAgyY0aynqDdjHll1ps1UaZHQPLaI%3D3acLywE5rmQggaiCGzXvNvAE8WMty56ZgRq6jhvr4EuM4kGx1U
+access_token = "944709207038754816-4pxm3AJYW5pSinuHDtarzoflLxm6hp1"
+access_token_secret ="l1JdNagmeif7fDKKyVJNbmmwTqF2fRVY4QZIz28hZh4Mq"
+# consumer_key = os.environ.get('twitter_consumer_key')
 
-
-
+# print(os.environ)
 
 
 
