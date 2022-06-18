@@ -44,7 +44,7 @@ class IDPrinter(tweepy.Stream):
         themention = Mention(mention_id=new_id,full_text=statustext,tags=tags)
         db.session.add(themention)
         db.session.commit()
-        domain = "localhost:5000/home/" + tags 
+        domain = "https://imgworld.herokuapp.com/home/" + tags 
         url = domain + text
         api.update_status('@' + screen_name + " Here's your Search results. Click the link below: " + domain)
         return True
@@ -307,6 +307,7 @@ def home():
     ROWS_PER_PAGE = 5
     page = request.args.get('page', 1, type=int)
     trending = Meme.query.order_by(Meme.views.desc()).paginate(page, ROWS_PER_PAGE, False)
+
   
     return render_template('index.html',title="IMG World",asearchh='no',trending=trending,searchform=searchform)
 
