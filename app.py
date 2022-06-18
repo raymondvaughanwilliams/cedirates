@@ -220,89 +220,89 @@ def view(id):
 def home():
     searchform = Searchform()
     # use tweepy mention api to get mentions
-    mentions = api.mentions_timeline( tweet_mode='extended')
-    if len(mentions) == 0:
-        return
-    else:
-        #if mention is found look through all mentions and if 'qqq' is found save the tweet id and the tweet text
-        for mention in mentions:
-            # print(mention)
-            mention_check = Mention.query.filter_by(mention_id=mention.id).first()
-            if mention_check is None and "qqq" in mention.full_text:
-                tweet= []
-                new_id = mention.id
-                text = mention.full_text
+    # mentions = api.mentions_timeline( tweet_mode='extended')
+    # if len(mentions) == 0:
+    #     return
+    # else:
+    #     #if mention is found look through all mentions and if 'qqq' is found save the tweet id and the tweet text
+    #     for mention in mentions:
+    #         # print(mention)
+    #         mention_check = Mention.query.filter_by(mention_id=mention.id).first()
+    #         if mention_check is None and "qqq" in mention.full_text:
+    #             tweet= []
+    #             new_id = mention.id
+    #             text = mention.full_text
 
-                ntxt=[]
-                txt = []
-                # Process text from mention and save it to db.There is a faster way to do this.
-                for x in text.split():
-                    if x.startswith("@"):
-                        ntxt.append(x)
-                    elif x.startswith("qqq"):
-                        ntxt.append(x)
-                    else:
-                        txt.append(x)
-                for tex in txt:
-                    tags= ''.join(tex)
-                themention = Mention(mention_id=new_id,full_text=text,tags=tags)
-                db.session.add(themention)
-                db.session.commit()
-                # meme = Meme.query.filter_by(tags=text).first()
-                memes = Meme.query.filter(Meme.tags.like('%'+tags+'%')).all()
-                # memes = whoosh_search(tags)
-                # process reply and use tweepy to send reply
-                domain = "localhost:5000/home/" + tags 
-                url = domain + text
-                # console.log(text)
-                api.update_status('@' + mention.user.screen_name + " Here's your Search results. Click the link below: " + domain)
-                return render_template("indexnew.html", memes=memes,title="IMG World",searchform=searchform)
-        since_id = "1520898332213850118"
-        count = "10"
-        # print("Start")
-        # if direct message is found look through all dms and if 'qqq' is found save the tweet id and the tweet text   
-        direct_messages = api.get_direct_messages(count=10)
-        # print(len(direct_messages))
-        count == 0
-        for message in direct_messages:
-            message_check = DirectMessage.query.filter_by(message_id=message.id).first()
-            if message_check is None and "qqq" in message.message_create['message_data']['text']:
-            # if message.id > since_id:
-                dm_id= message.id
-                text = message.message_create['message_data']['text']
-                sender_id = message.message_create['sender_id']
-                # print(message)
-                # print(message.id)
-                print(message.message_create['message_data']['text'])
-                #process full_text to get tags to search for
-                ntxt=[]
-                txt = []
-                # Process tags and save to db. There is a faster way to do this
-                for x in text.split():
-                    if x.startswith("qqq"):
-                        ntxt.append(x)
-                    else:
-                        txt.append(x)
-                for tex in txt:
-                    tags= ''.join(tex)
-                    # print(tags)
-                themessage= DirectMessage(message_id=dm_id,text=tags,sender_id=sender_id)
-                db.session.add(themessage)
-                db.session.commit()
+    #             ntxt=[]
+    #             txt = []
+    #             # Process text from mention and save it to db.There is a faster way to do this.
+    #             for x in text.split():
+    #                 if x.startswith("@"):
+    #                     ntxt.append(x)
+    #                 elif x.startswith("qqq"):
+    #                     ntxt.append(x)
+    #                 else:
+    #                     txt.append(x)
+    #             for tex in txt:
+    #                 tags= ''.join(tex)
+    #             themention = Mention(mention_id=new_id,full_text=text,tags=tags)
+    #             db.session.add(themention)
+    #             db.session.commit()
+    #             # meme = Meme.query.filter_by(tags=text).first()
+    #             memes = Meme.query.filter(Meme.tags.like('%'+tags+'%')).all()
+    #             # memes = whoosh_search(tags)
+    #             # process reply and use tweepy to send reply
+    #             domain = "localhost:5000/home/" + tags 
+    #             url = domain + text
+    #             # console.log(text)
+    #             api.update_status('@' + mention.user.screen_name + " Here's your Search results. Click the link below: " + domain)
+    #             return render_template("indexnew.html", memes=memes,title="IMG World",searchform=searchform)
+    #     since_id = "1520898332213850118"
+    #     count = "10"
+    #     # print("Start")
+    #     # if direct message is found look through all dms and if 'qqq' is found save the tweet id and the tweet text   
+    #     direct_messages = api.get_direct_messages(count=10)
+    #     # print(len(direct_messages))
+    #     count == 0
+    #     for message in direct_messages:
+    #         message_check = DirectMessage.query.filter_by(message_id=message.id).first()
+    #         if message_check is None and "qqq" in message.message_create['message_data']['text']:
+    #         # if message.id > since_id:
+    #             dm_id= message.id
+    #             text = message.message_create['message_data']['text']
+    #             sender_id = message.message_create['sender_id']
+    #             # print(message)
+    #             # print(message.id)
+    #             print(message.message_create['message_data']['text'])
+    #             #process full_text to get tags to search for
+    #             ntxt=[]
+    #             txt = []
+    #             # Process tags and save to db. There is a faster way to do this
+    #             for x in text.split():
+    #                 if x.startswith("qqq"):
+    #                     ntxt.append(x)
+    #                 else:
+    #                     txt.append(x)
+    #             for tex in txt:
+    #                 tags= ''.join(tex)
+    #                 # print(tags)
+    #             themessage= DirectMessage(message_id=dm_id,text=tags,sender_id=sender_id)
+    #             db.session.add(themessage)
+    #             db.session.commit()
 
-                # pagination
-                ROWS_PER_PAGE = 10
-                page = request.args.get('page', 1, type=int)
+                # # pagination
+                # ROWS_PER_PAGE = 10
+                # page = request.args.get('page', 1, type=int)
 
 
-                memes = Meme.query.filter(Meme.tags.like('%'+tags+'%')).paginate(page, 4, False)
-                trending = Meme.query.order_by(Meme.views.desc()).all()
+                # memes = Meme.query.filter(Meme.tags.like('%'+tags+'%')).paginate(page, 4, False)
+                # trending = Meme.query.order_by(Meme.views.desc()).all()
 
-                #process and send reply with tweepy
-                domain = "https://www.localhost:5000/home/" + tags 
-                reply =  " Here's your Search results. Click the link below: " + domain
-                api.send_direct_message(sender_id, reply)
-                return render_template("index.html", memes=memes,title="IMG World",page=page,trending=trending)
+                # #process and send reply with tweepy
+                # domain = "https://www.localhost:5000/home/" + tags 
+                # reply =  " Here's your Search results. Click the link below: " + domain
+                # api.send_direct_message(sender_id, reply)
+                # return render_template("index.html", memes=memes,title="IMG World",page=page,trending=trending)
 
     ROWS_PER_PAGE = 5
     page = request.args.get('page', 1, type=int)
