@@ -296,7 +296,7 @@ def home():
 
 
                 # memes = Meme.query.filter(Meme.tags.like('%'+tags+'%')).paginate(page, 4, False)
-                # trending = Meme.query.order_by(Meme.views.desc()).all()
+    trending = Meme.query.order_by(Meme.views.desc()).all()
 
                 # #process and send reply with tweepy
                 # domain = "https://www.localhost:5000/home/" + tags 
