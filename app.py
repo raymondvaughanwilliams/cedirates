@@ -216,6 +216,7 @@ def view(id):
 
 
 #Home route
+@app.route('/')
 @app.route('/home')
 def home():
     searchform = Searchform()
