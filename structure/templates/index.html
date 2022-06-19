@@ -26,28 +26,47 @@
    
           <!-- here-->
           {% for trend in trending.items %}
-          {% if trend %}
+          {% if trend.type == 'picture' %}
            <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-5">
                <div class="thumbnails"  >
                  <figure class="effect-ming tm-video-item " >
                      <a class="btn" style="object-fit: cover;"  href="{{ url_for('view',id=trend.id) }}"><img src="{{trend.image}}" alt="..." class="img-fluid" style="max-width: 100%; height: 250px;"></a>
                                          <figcaption class="d-flex align-items-center justify-content-center"  >
-                         <h2>View</h2>
+                         <h2>View </h2>
                          <a href="{{ url_for('view',id=trend.id) }}">View more</a>
                      </figcaption>                    
                  </figure>
                 </div>
                  <div class="d-flex justify-content-between tm-text-gray">
                      <a class="btn"  href="{{ url_for('view',id=trend.id) }}">View</a>
-                     <span>{{trend.type}}</span>
+                     <span>{{trend.type}} </span>
                  </div>
              </div>
+             {% else %}
+             <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-5">
+                <div class="thumbnails"  >
+                  <figure class="effect-ming tm-video-item " >
+                <video autoplay="autoplay" controls="controls" preload="preload">
+                    <source src="{{trend.image}}" type="video/mp4"  /> 
+                </video>
+                </figure>
+
+            <div class="d-flex justify-content-between tm-text-gray">
+                <a class="btn"  href="{{ url_for('view',id=trend.id) }}">View</a>
+                <span>{{trend.type}} </span>
+            </div>
+        </div>
+    </div>
             <!--thingy-->
-        
+
+   
               
  
              {% endif %}
              {% endfor %}
+
+             ----------------------------------------------------------------
+
          </div>
        
 

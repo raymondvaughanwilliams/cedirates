@@ -308,9 +308,10 @@ def home():
     ROWS_PER_PAGE = 5
     page = request.args.get('page', 1, type=int)
     trending = Meme.query.order_by(Meme.views.desc()).paginate(page, ROWS_PER_PAGE, False)
+    memes = Meme.query.all()
 
   
-    return render_template('index.html',title="IMG World",asearchh='no',trending=trending,searchform=searchform)
+    return render_template('index.html',title="IMG World",asearchh='no',trending=trending,searchform=searchform,memes=memes)
 
 
 
@@ -380,7 +381,7 @@ def add():
 
 
 #check if file format is allowed
-allowed_extensions = ['png', 'jpg', 'jpeg', 'gif']
+allowed_extensions = ['png', 'jpg', 'jpeg', 'gif','mp4']
 def check_file_extension(filename):
     return filename.rsplit('.', 1)[1].lower() in allowed_extensions
 

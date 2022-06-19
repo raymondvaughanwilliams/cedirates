@@ -41,6 +41,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
 app.config['UPLOADED_PHOTOS_DEST'] = os.path.join(basedir, 'static/images')
+app.config['UPLOADED_PHOTOS_ALLOW'] = set(['png', 'jpg', 'jpeg','mp4'])
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 photos = UploadSet('photos', IMAGES)
 configure_uploads(app, photos)
 patch_request_class(app)
