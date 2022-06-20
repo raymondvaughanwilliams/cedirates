@@ -181,8 +181,8 @@ def findtag(tag):
             url = dict['data'][i]['images']['original']['url']
     else:
         results="no"
-
-    return render_template('indexnew.html',memes=memes,tags=tag,giphys=r,dict=dict,len=length,search='yes',searchform=searchform,dictdata=dictdata,dictdatalen=dictdatalen,results=results,page=page)
+    lengthofmemes = len(memes)
+    return render_template('indexnew.html',memes=memes,tags=tag,giphys=r,dict=dict,len=length,search='yes',searchform=searchform,dictdata=dictdata,dictdatalen=dictdatalen,results=results,page=page,lengthofmemes=lengthofmemes)
 
 
 
