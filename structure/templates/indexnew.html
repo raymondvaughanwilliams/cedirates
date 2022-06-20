@@ -71,15 +71,15 @@
             {% for i in range(0,len) %}
             <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-5">
                 <figure class="effect-ming tm-video-item">
-                    <a class="btn"  href="{{ url_for('view',id=dict['data'][i]['images']['original']['url']) }}"><img src="{{dict['data'][i]['images']['original']['url']}}" alt="..." class="img-fluid"></a>
+                    <a class="btn"  href="{{ url_for('viewgif',id=dict['data'][i]['images']['original']['url']) }}"><img src="{{dict['data'][i]['images']['original']['url']}}" alt="..." class="img-fluid"></a>
                     <figcaption class="d-flex align-items-center justify-content-center">
                         <h2>View</h2>
-                        <a href="{{ url_for('view',id=dict['data'][i]['id']) }}">View more</a>
+                        <a href="{{ url_for('viewgif',id=dict['data'][i]['id']) }}">View more</a>
                     </figcaption>                    
                 </figure>
                 <div class="d-flex justify-content-between tm-text-gray">
                     <span>{{dict['data'][i]['title']}}</span>
-                    <a href="{{ url_for('view',id=dict['data'][i]['id']) }}">View more</a>
+                    <a href="{{ url_for('viewgif',id=dict['data'][i]['id']) }}">View more</a>
 
                 </div>
             </div>
