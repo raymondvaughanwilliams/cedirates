@@ -182,7 +182,7 @@ def findtag(tag):
     else:
         results="no"
     # lengthofmemes = len(memes)
-    return render_template('indexnew.html',memes=memes,tags=tag,giphys=r,dict=dict,len=length,search='yes',searchform=searchform,dictdata=dictdata,dictdatalen=dictdatalen,results=results,page=page,lengthofmemes=lengthofmemes)
+    return render_template('indexnew.html',memes=memes,tags=tag,giphys=r,dict=dict,len=length,search='yes',searchform=searchform,dictdata=dictdata,dictdatalen=dictdatalen,results=results,page=page)
 
 
 
