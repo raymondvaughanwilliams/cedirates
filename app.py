@@ -317,7 +317,7 @@ def home():
                 # api.send_direct_message(sender_id, reply)
                 # return render_template("index.html", memes=memes,title="IMG World",page=page,trending=trending)
 
-    ROWS_PER_PAGE = 5
+    ROWS_PER_PAGE = 20
     page = request.args.get('page', 1, type=int)
     trending = Meme.query.order_by(Meme.views.desc()).paginate(page, ROWS_PER_PAGE, False)
     memes = Meme.query.all()
