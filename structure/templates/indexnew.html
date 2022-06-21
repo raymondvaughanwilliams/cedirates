@@ -40,7 +40,7 @@
         <div class="row tm-mb-90 tm-gallery">
    
             {% for meme in memes.items %}
-         {% if meme %}
+         {% if meme.type == "picture" or meme.type == "gif"%}
         	<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-5">
                 <div class="thumbnails"  >
                 <figure class="effect-ming tm-video-item">
@@ -58,8 +58,20 @@
         </div>
            
             {% else %}
-           <p>"No results found"<p>
-            {% endif %}
+            <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-5">
+                <div class="thumbnails"  >
+                  <figure class="effect-ming tm-video-item " >
+                <video autoplay="autoplay" controls="controls" preload="preload" class="img-fluid" style="max-width: 100%; height: 250px;">
+                    <source src="{{meme.image}}" type="video/mp4"  /> 
+                </video>
+                </figure>
+
+            <div class="d-flex justify-content-between tm-text-gray">
+                <a class="btn"  href="{{ url_for('view',id=meme.id) }}">View</a>
+                <span>{{meme.type}} </span>
+            </div>
+        </div>
+    </div>            {% endif %}
             {% endfor %}
     
         </div>
