@@ -16,14 +16,13 @@
         </div>
         <div class="row tm-mb-90">            
             <div class="col-xl-3 offset-md-3 col-lg-7 col-md-6 col-sm-12">
-                {% if meme and meme.type == 'picture'%}
+                {% if meme.type == 'picture' or meme.type == 'gif'%}
                 <img src="{{meme.image}}" alt="Image" class="img-fluid">
                 {% elif meme and meme.type == 'video'%}
                 <video autoplay="autoplay" controls="controls" preload="preload">
                     <source src="{{meme.image}}" type="video/mp4"  /> 
                 </video>
-                {% else %}
-                <img src="{{dict['data']['images']['original']['url']}}" alt="Image" class="img-fluid" >
+            
                 {% endif %}
             </div>
             <div class="col-xl-4 col-lg-5 col-md-6 col-sm-12">

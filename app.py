@@ -204,15 +204,18 @@ def viewgif(id):
 def view(id):
     # memes = Meme.query.filter_by(tags=tag).all()
     meme = Meme.query.filter_by(id=id).first()
-    # print(meme)
+    # print(id)
+    # print(meme.views)
     #using lenth of id to check if id is from giphy api or from database
-    if len(id) > 10:
-        url = id 
-        url= 'http://api.giphy.com/v1/gifs/'+id+'?api_key=BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et'
-        response = urllib.request.urlopen(url)
-        mdata = response.read()
-        dict = json.loads(mdata)
-        return render_template('viewmeme.html',dict=dict,similar=similar)
+    # if len(id) > 10:
+    #     return redirect(url_for('viewgif',id=id))
+
+    #     url = id 
+    #     url= 'http://api.giphy.com/v1/gifs/'+id+'?api_key=BeeDE4AMUc1K32Ii6Bi8TM2yc3aMy7Et'
+    #     response = urllib.request.urlopen(url)
+    #     mdata = response.read()
+    #     dict = json.loads(mdata)
+    #     return render_template('viewmeme.html',dict=dict,similar=similar)
     #if there is a meme found split the tag and add a view to views counter and also search for similar memes
     if meme:
         tags= meme.tags
@@ -223,7 +226,7 @@ def view(id):
             similar = Meme.query.filter(Meme.tags.like('%'+t+'%')).order_by(Meme.views.desc()).all()
         return render_template('viewmeme.html',meme=meme,similar=similar)
     
-    return render_template('viewmeme.html',meme=meme,url=url,dict=dict)
+    return render_template('viewmeme.html',meme=meme,dict=dict)
 
 
 
