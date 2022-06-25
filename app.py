@@ -70,7 +70,7 @@ printer = IDPrinter(
   consumer_key, consumer_secret,
   access_token, access_token_secret
 )
-printer.filter(track=['@rv__williams'],threaded=True)
+printer.filter(track=['@imgworldbot'],threaded=True)
 # mention = printer.filter(track=['@rv__williams'])
 
 # printer.filter(follow=['@rv__williams'])
