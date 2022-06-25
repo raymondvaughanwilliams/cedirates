@@ -61,7 +61,7 @@
             <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-5">
                 <div class="thumbnails"  >
                   <figure class="effect-ming tm-video-item " >
-                <video autoplay="autoplay" controls="controls" preload="preload" class="img-fluid" style="max-width: 100%; height: 250px;">
+                <video  controls="controls" preload="preload" class="img-fluid" style="max-width: 100%; height: 250px;">
                     <source src="{{meme.image}}" type="video/mp4"  /> 
                 </video>
                 </figure>
@@ -79,6 +79,8 @@
         <h2 class="col-6 tm-text-primary">
             Search results from giphy
         </h2>
+   
+
         <div class="row tm-mb-90 tm-gallery">
             {% if search == 'yes' and results=='yes' %}
             {% for i in range(0,len) %}
@@ -92,7 +94,9 @@
                 </figure>
                 <div class="d-flex justify-content-between tm-text-gray">
                     <span>{{dict['data'][i]['title']}}</span>
-                    <a href="{{ url_for('viewgif',id=dict['data'][i]['id']) }}">View more</a>
+                    <div class="" style="height:70px;width:50px;">
+                        <img src="../static/static2/img/poweredbygiphy.gif" alt="hero" class="img-fluid" >
+</div>
 
                 </div>
             </div>
@@ -133,5 +137,10 @@
           </div><!-- container-fluid, tm-container-content -->
 
 </div>
+</div>
+
+
+<div class="image"> 
+    <img src="../static/static2/img/poweredbygiphy.gif" alt="hero" class="img-fluid" >
 </div>
 {% endblock %}
