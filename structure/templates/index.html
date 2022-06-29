@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="picture1 tm-hero d-flex justify-content-center align-items-center" data-parallax="scroll" alt="..." src="static/static2/img/hero.jpg">
+      {% from "_formhelpers.html" import render_field %}
+        <form class="d-flex tm-search-form" method="post" action="{{ url_for('search') }}">
+          {{ searchform.search(class_='form-control tm-search-input') }}
+          {{ searchform.submit(class_='form-control tm-search-input') }}
+
+            </button>
+        </form>
+    </div>
+
+    <div class="container-fluid tm-container-content tm-mt-60">
+        <div class="row mb-4">
+            <h2 class="col-6 tm-text-primary">
+                Trending memes
+              
+            </h2>
+            <div class="col-6 d-flex justify-content-end align-items-center">
+                <form action="" class="tm-text-primary">
+                    Page <input type="text" value="{{ trending.page }}" size="1" class="tm-input-paging tm-text-primary"> of {{ trending.pages }}
+                </form>
+            </div>
+        </div>
+        <div class="row tm-mb-90 tm-gallery">
+   
+          <!-- here-->
+          {% for trend in trending.items %}
+          {% if trend.type == 'picture' or trend.type == "gif"%}
+           <div class="col-xl-3 col-lg-4   mb-5">
+               <div class="thumbnails"  >
+                 <figure class="effect-ming tm-video-item " >
+                     <a class="btn" style="object-fit: cover;"  href="{{ url_for('view',id=trend.id) }}"><img src="{{trend.image}}" alt="..." class="img-fluid" style="max-width: 100%; height: 250px;"></a>
+                                         <figcaption class="d-flex align-items-center justify-content-center"  >
+                         <h2>View </h2>
+                         <a href="{{ url_for('view',id=trend.id) }}">View more</a>
+                     </figcaption>                    
+                 </figure>
+                </div>
+                 <div class="d-flex justify-content-between tm-text-gray">
+                     <a class="btn"  href="{{ url_for('view',id=trend.id) }}">View</a>
+                     <span>{{trend.type}} </span>
+                 </div>
+             </div>
+             {% else %}
+             <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mb-5">
+                <div class="thumbnails"  >
+                  <figure class="effect-ming tm-video-item " >
+                <video  controls="controls" preload="preload" class="img-fluid" style="max-width: 100%; height: 250px;">
+                    <source src="{{trend.image}}" type="video/mp4"  /> 
+                </video>
+                </figure>
+
+            <div class="d-flex justify-content-between tm-text-gray">
+                <a class="btn"  href="{{ url_for('view',id=trend.id) }}">View</a>
+                <span>{{trend.type}} </span>
+            </div>
+        </div>
+    </div>
+            <!--thingy-->
+
+   
+              
+ 
+             {% endif %}
+             {% endfor %}
+
+
+         </div>
+       
+
+        
+
+       
+
+    <div class="row tm-mb-90">
+      <div class="col-12 d-flex justify-content-between align-items-center tm-paging-col">
+        <a href="{{ url_for('home', page=trending.prev_num) }}"
+        class="btn btn-primary tm-btn-prev mb-2 disabled
+        {% if trending.page == 1 %}disabled{% endif %}">
+         &laquo;Previous
+     </a>
+               <div class="tm-paging d-flex">
+                {% for page_num in trending.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}{% if page_num %}
+                <!-- Check for the active page and set the link to "Active"-->
+                         {% if trending.page == page_num %}
+              <a href="{{ url_for('home', page=page_num) }}" class="active tm-paging-link">{{ page_num }}</a>
+                          {% else %}
+                          <a href="{{ url_for('home', page=page_num) }}" class="tm-paging-link">{{ page_num }}</a>
+                          {% endif %}
+                      {% else %}
+                          ...
+                      {% endif %}
+                  {% endfor %}
+
+          </div>
+          <a href="{{ url_for('home', page=trending.next_num) }}" class="btn btn-primary tm-btn-next   {% if trending.page == trending.pages %}disabled{% endif %}">Next Page</a>
+      </div>         
+      <p class="text-right mt-3">
+        Showing page {{ trending.page }} of {{ trending.pages }}
+       </p>   
+  </div>
+</div> <!-- container-fluid, tm-container-content -->
+
+    <div class="text-right">
+      <a href="{{ url_for('home', page=trending.prev_num) }}"
+         class="btn btn-outline-dark 
+         {% if trending.page == 1 %}disabled{% endif %}">
+          &laquo;
+      </a><!-- Loop through the number of pages to display a link for each-->
+      {% for page_num in trending.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}{% if page_num %}
+     <!-- Check for the active page and set the link to "Active"-->
+              {% if trending.page == page_num %}
+              <a href="{{ url_for('home', page=page_num) }}"
+                 class="btn btn-dark">
+                  {{ page_num }}
+              </a>
+              {% else %}
+              <a href="{{ url_for('home', page=page_num) }}"
+                 class="btn btn-outline-dark">
+                  {{ page_num }}
+              </a>
+              {% endif %}
+          {% else %}
+              ...
+          {% endif %}
+      {% endfor %}    <a href="{{ url_for('home', page=trending.next_num) }}"
+         class="btn btn-outline-dark 
+         {% if trending.page == trending.pages %}disabled{% endif %}">
+          &raquo;
+      </a>
+    </div>
+    <p class="text-right mt-3">
+     Showing page {{ trending.page }} of {{ trending.pages }}
+    </p>
+                </div>
+              </div>
+            </div>
+
+</body>
+</html>
+{% endblock %}
