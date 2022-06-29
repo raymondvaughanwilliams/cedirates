@@ -417,7 +417,7 @@ def addmeme():
             meme = Meme(tags=tags,type=type,image=img)
             db.session.add(meme)
             db.session.commit()
-        flash(f'Meme added successfully','success')
+        # flash(f'Meme added successfully','success')
         return redirect(url_for('home'))
     return render_template('addmeme.html',title ="Add Meme",form=form)
 

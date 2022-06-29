@@ -119,7 +119,7 @@
                             url:"/livesearch",
                             data:{text:$("#livebox").val()},
                             success:function(res){
-                                var data = "<div class='row'>Similar memes: <p><div class='col-md-3'>";
+                                var data = "<div class='row'>Similar memes:";
                                 $.each(res.allimg,function(index,value){
                                     data += " <div class='thumbnails'  ><img src ="+value+" alt='...' class='img-fluid' style='max-width: 100%; height: 250px;'></p>";
                                 });
