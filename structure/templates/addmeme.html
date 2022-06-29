@@ -20,7 +20,7 @@
                             <form method="post" action="" enctype="multipart/form-data">
                             <div>
                                 {{ render_field(form.tags, class="form-control",id="livebox") }}
-                                    <p id = "datalist"></p>
+                                    <div id = "datalist"></div>
                     
                                                                  
                       
@@ -119,11 +119,15 @@
                             url:"/livesearch",
                             data:{text:$("#livebox").val()},
                             success:function(res){
-                                var data = "<div class='row'>Similar memes:";
+                                var data = `<div class='row' style="gap: 30px;">
+                                    <p>Similar memes: </p> `;
                                 $.each(res.allimg,function(index,value){
-                                    data += " <div class='thumbnails'  ><img src ="+value+" alt='...' class='img-fluid' style='max-width: 100%; height: 250px;'></p>";
+
+                                    data += `
+                                        <img src ="${value}" alt='...' class='img-fluid' style='width: 300px; height: 250px;'>
+                                            `;
                                 });
-                                data += "</div>";
+                                data += "</div>"; 
                                 $("#datalist").html(data);
                             }
                         });
