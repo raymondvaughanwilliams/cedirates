@@ -8,15 +8,17 @@ import logging
 import os
 from flask_msearch import Search
 import sys
-from whoosh.qparser import OrGroup
-from whoosh.qparser import AndGroup
-from whoosh.qparser import MultifieldParser
-from whoosh.analysis import StemmingAnalyzer
 import whoosh.index
 from whoosh.fields import Schema
 from tweepy import Stream
 # from tweepy.streaming import StreamListener
 from flask import Flask, render_template, request,redirect,url_for,flash,jsonify
+from os import environ
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
 
 app = Flask(__name__)
 
@@ -61,18 +63,12 @@ logger.setLevel(logging.INFO)
 
 
 
-
-# consumer_secret = os.environ.get('twitter_consumer_secret')
-# access_token = os.environ.get('twitter_access_token')
-# access_token_secret = os.environ.get('twitter_access_token_secret')
-consumer_key = "TLhUlcuYQ9UzwvFyfEzcwoRGY"
-consumer_secret= "zSRMSeeAWvmF3A9iYfJNuel7iovnqBhAT20a9BZQeTTF8FbJHJ"
-# bearer_token =AAAAAAAAAAAAAAAAAAAAAJWMbgEAAAAAgyY0aynqDdjHll1ps1UaZHQPLaI%3D3acLywE5rmQggaiCGzXvNvAE8WMty56ZgRq6jhvr4EuM4kGx1U
-access_token = "944709207038754816-4pxm3AJYW5pSinuHDtarzoflLxm6hp1"
-access_token_secret ="l1JdNagmeif7fDKKyVJNbmmwTqF2fRVY4QZIz28hZh4Mq"
-# consumer_key = os.environ.get('twitter_consumer_key')
-
 # print(os.environ)
+consumer_key = os.environ.get('CONSUMER_KEY')
+consumer_secret = environ.get('consumer_secret')
+access_token = environ.get('access_token')
+access_token_secret = environ.get('access_token_secret')
+
 
 
 
@@ -80,110 +76,4 @@ auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
 
 api = tweepy.API(auth,wait_on_rate_limit=True)
-
-# stream = tweepy.Stream(
-#    consumer_key, consumer_secret,
-#   access_token, access_token_secret
-# )
-
-# class IDPrinter(tweepy.Stream):
-
-#     def on_status(self, status):
-#         # mentions =stream.filter(track=['python'])
-#         print(status.text)
-#         text = status.text
-#         new_id = status.id
-#         screen_name = status.user.screen_name
-#         ntxt=[]
-#         txt = []
-#         for x in text.split():
-#             if x.startswith("@"):
-#                 ntxt.append(x)
-#             elif x.startswith("qqq"):
-#                 ntxt.append(x)
-#             else:
-#                 txt.append(x)
-#         for tex in txt:
-#             tags= ''.join(tex)
-#         themention = Mention(mention_id=new_id,full_text=text,tags=tags)
-#         db.session.add(themention)
-#         db.session.commit()
-#         domain = "localhost:5000/home/" + tags 
-#         url = domain + text
-#         api.update_status('@' + status.user.screen_name + " Here's your Search results. Click the link below: " + domain)
-
-
-
-#         # for s in status.text:
-#         #     if "rv__williams" in status.text:
-#         #         # print(status.user)
-
-#         #         # print(status.text)
-#         #         # print(len(status))
-#         #     # print(status)
-#         #         print("next")
-#         #         print(status.text)
-
-
-# printer = IDPrinter(
-#   consumer_key, consumer_secret,
-#   access_token, access_token_secret
-# )
-# printer.filter(track=['@rv__williams'])
-# mention = printer.filter(track=['@rv__williams'])
-# print("mention:")
-# print(mention)
-# printer.sample(threaded=True)
-# mentionstream = Stream(auth, IDPrinter())
-# the = mentionstream.filter(track=['a'])
-# print(the)
-# stream = tweepy.Stream(auth, IDPrinter())
-# mentions = tweepy.stream.filter(track=['@rv__williams'])
-# print(mentions)
-# class Listener(tweepy.Stream):
-#     def __init__(self, output_file=sys.stdout):
-#         super(Listener,self).__init__()
-#         self.output_file = output_file
-#     def on_status(self, status):
-#         print(status.text, file=self.output_file)
-#     def on_error(self, status_code):
-#         print(status_code)
-#         return False
-
-# output = open('stream_output.txt', 'w')
-# listener = Listener(output_file=output)
-
-# stream = tweepy.Stream(auth=api.auth, listener=listener)
-# try:
-#     print('Start streaming.')
-#     stream.sample(languages=['en'])
-# except KeyboardInterrupt:
-#     print("Stopped.")
-# finally:
-#     print('Done.')
-#     stream.disconnect()
-#     output.close()
-
-
-
-# class MyListener(tweepy.Stream):
-#     def on_data(self, data):
-#         try:
-#             with open('python.json', 'a') as f:
-#                 f.write(data)
-#                 return True
-#         except BaseException as e:
-#             print("Error on_data: %s" % str(e))
-#         return True
- 
-#     def on_error(self, status):
-#         print(status)
-#         return True
- 
-# twitter_stream = Listener(
-#   consumer_key, consumer_secret,
-#   access_token, access_token_secret
-# )
-
-# twitter_stream.filter(track=['#python'])
 

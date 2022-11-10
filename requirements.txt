@@ -40,3 +40,5 @@ Werkzeug==0.16.0
 Whoosh==2.7.4
 WTForms==2.3.3
 zipp==3.8.0
+python-dotenv==0.21.0
+APScheduler==3.9.1

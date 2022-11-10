@@ -20,60 +20,60 @@ import atexit
 # stream from tweepy 
 
 
-stream = tweepy.Stream(
-   consumer_key, consumer_secret,
-  access_token, access_token_secret
-)
+# stream = tweepy.Stream(
+#    consumer_key, consumer_secret,
+#   access_token, access_token_secret
+# )
 
-class IDPrinter(tweepy.Stream):
+# class IDPrinter(tweepy.Stream):
 
-    def on_status(self, status):
-        # mentions =stream.filter(track=['python'])
-        statustext = status.text
-        new_id = status.id
-        screen_name = status.user.screen_name
-        if " " in statustext:
-            text = statustext.replace(" ","-")
+#     def on_status(self, status):
+#         # mentions =stream.filter(track=['python']) .  
+#         statustext = status.text
+#         new_id = status.id
+#         screen_name = status.user.screen_name
+#         if " " in statustext:
+#             text = statustext.replace(" ","-")
                     
-        ntxt=[]
-        txt = []
-        for x in text.split("-"):
-            if x.startswith("@"):
-                ntxt.append(x)
-            else:
-                txt.append(x)
-        tags = '-'.join(txt)
-        themention = Mention(mention_id=new_id,full_text=statustext,tags=tags)
-        db.session.add(themention)
-        db.session.commit()
-        domain = "https://imgworld.herokuapp.com/home/" + tags 
-        url = domain + text
-        api.update_status('@' + screen_name + " Here's your Search results. Click the link below: " + domain)
-        return True
+#         ntxt=[]
+#         txt = []
+#         for x in text.split("-"):
+#             if x.startswith("@"):
+#                 ntxt.append(x)
+#             else:
+#                 txt.append(x)
+#         tags = '-'.join(txt)
+#         themention = Mention(mention_id=new_id,full_text=statustext,tags=tags)
+#         db.session.add(themention)
+#         db.session.commit()
+#         domain = "https://imgworld.herokuapp.com/home/" + tags 
+#         url = domain + text
+#         api.update_status('@' + screen_name + " Here's your Search results. Click the link below: " + domain)
+#         return True
 
 
-    def on_direct_message( self, direct_message ):    
+#     def on_direct_message( self, direct_message ):    
             
-        print(direct_message)
+#         print(direct_message)
 
-        author = direct_message.author.screen_name
-        print(direct_message.text)
-        api.send_direct_message(screen_name=author, text='response') ['message_data']['text']
+#         author = direct_message.author.screen_name
+#         print(direct_message.text)
+#         api.send_direct_message(screen_name=author, text='response') ['message_data']['text']
 
-        return True
+#         return True
 
-    def on_data( self, data ):
-        # print(dms)
-        print("This is the message received: ", data)
+#     def on_data( self, data ):
+#         # print(dms)
+#         print("This is the message received: ", data)
 
 
-printer = IDPrinter(
-  consumer_key, consumer_secret,
-  access_token, access_token_secret
-)
-printer.filter(track=['@imgworldbot'],threaded=True)
+# printer = IDPrinter(
+#   consumer_key, consumer_secret,
+#   access_token, access_token_secret
+# )
+# printer.filter(track=['@imgworldbot'],threaded=True)
 
-__searchable__ = '__searchable__'
+# __searchable__ = '__searchable__'
 # DEFAULT_WHOOSH_INDEX_NAME = 'whoosh_index'
 
 
@@ -141,7 +141,7 @@ def cedirates():
     media = api.media_upload(image_path)
     api.update_status(status=thetweet, media_ids=[media.media_id])
 
-    return "something"
+    return thetweet
 
 
 # scheduler = BackgroundScheduler()
