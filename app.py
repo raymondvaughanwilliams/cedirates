@@ -1,19 +1,19 @@
 from unittest import removeResult
 from wsgiref.handlers import read_environ
 from flask import Flask, render_template, request,redirect,url_for,flash,jsonify
-from structure import db,app,api,logger,photos,basedir,consumer_key,consumer_secret,access_token, access_token_secret
+from structure import app,api,logger,photos,basedir,consumer_key,consumer_secret,access_token, access_token_secret
 from flask import send_from_directory,send_file
 import tweepy
 import secrets
 import requests
 import datetime
 import urllib.request, json
-import logging
-from models import Meme,Mention,DirectMessage
+# import logging
+# from models import Meme,Mention,DirectMessage
 import os  
-from whoosh.index import create_in
-from whoosh.fields import *
-from flask_msearch import Search
+# from whoosh.index import create_in
+# from whoosh.fields import *
+# from flask_msearch import Search
 from apscheduler.schedulers.background import BackgroundScheduler
 import atexit
 
@@ -25,56 +25,30 @@ import atexit
 #   access_token, access_token_secret
 # )
 
-# class IDPrinter(tweepy.Stream):
+# class BOGReplies(tweepy.Stream):
 
 #     def on_status(self, status):
 #         # mentions =stream.filter(track=['python']) .  
 #         statustext = status.text
 #         new_id = status.id
-#         screen_name = status.user.screen_name
-#         if " " in statustext:
-#             text = statustext.replace(" ","-")
-                    
-#         ntxt=[]
-#         txt = []
-#         for x in text.split("-"):
-#             if x.startswith("@"):
-#                 ntxt.append(x)
-#             else:
-#                 txt.append(x)
-#         tags = '-'.join(txt)
-#         themention = Mention(mention_id=new_id,full_text=statustext,tags=tags)
-#         db.session.add(themention)
-#         db.session.commit()
-#         domain = "https://imgworld.herokuapp.com/home/" + tags 
-#         url = domain + text
-#         api.update_status('@' + screen_name + " Here's your Search results. Click the link below: " + domain)
-#         return True
+#         # if "Bank of Ghana Exchange Rates" in statustext:
+#         print("working")
+#         tweet = cedirates()
+#         api.update_status(status = tweet, in_reply_to_status_id = new_id , auto_populate_reply_metadata=True)
+#         api.update_status('@nosize71' + tweet , new_id)
 
+#    # def on_limit(self,status):
+#     #     print ("Rate Limit Exceeded, Sleep for 15 Mins")
+#     #     time.sleep(15 * 60)
+#     #     return True
 
-#     def on_direct_message( self, direct_message ):    
-            
-#         print(direct_message)
-
-#         author = direct_message.author.screen_name
-#         print(direct_message.text)
-#         api.send_direct_message(screen_name=author, text='response') ['message_data']['text']
-
-#         return True
-
-#     def on_data( self, data ):
-#         # print(dms)
-#         print("This is the message received: ", data)
-
-
-# printer = IDPrinter(
+# bogreplies = BOGReplies(
 #   consumer_key, consumer_secret,
 #   access_token, access_token_secret
 # )
-# printer.filter(track=['@imgworldbot'],threaded=True)
+# bogreplies.filter(track=['@nosize71'],threaded=True)
 
-# __searchable__ = '__searchable__'
-# DEFAULT_WHOOSH_INDEX_NAME = 'whoosh_index'
+
 
 
 
@@ -94,7 +68,7 @@ def cedirates():
     urlbtc = "https://api.apilayer.com/fixer/convert?to=GHS&from=BTC&amount=1"
     payload = {}
     headers= {
-    "apikey": "Fxsdl1cJnRdNiTxjMLCnnHJQfEdJgB1x"
+    "apikey": "RrFLOIVAHD6Yx8d6nP8FQ4lXZb7nTQri"
     }
     # usd rate 
     response = requests.request("GET", url, headers=headers, data = payload)
@@ -107,8 +81,8 @@ def cedirates():
  
     
     responseeur = requests.request("GET", urleur, headers=headers, data = payload)
-    print("response:")
-    print(responseeur.text)
+    # print("response:")
+    # print(responseeur.text)
     dataeur = responseeur.text
     parseeur =json.loads(dataeur)
     rateeur = parseeur["info"]["rate"]
@@ -116,8 +90,8 @@ def cedirates():
     
     
     responsegpb = requests.request("GET", urlgbp, headers=headers, data = payload)
-    print("response:")
-    print(responsegpb.text)
+    # print("response:")
+    # print(responsegpb.text)
     datagbp = responsegpb.text
     parsegbp =json.loads(datagbp)
     rategbp = parsegbp["info"]["rate"]
@@ -125,8 +99,8 @@ def cedirates():
     
     
     responsebtc = requests.request("GET", urlbtc, headers=headers, data = payload)
-    print("response:")
-    print(responsebtc.text)
+    # print("response:")
+    # print(responsebtc.text)
     databtc = responsebtc.text
     parsebtc =json.loads(databtc)
     ratebtc = parsebtc["info"]["rate"]
@@ -149,7 +123,9 @@ def cedirates():
 # scheduler.start()
 # atexit.register(lambda: scheduler.shutdown())
 
-
+# tweet = cedirates()
+# print("tweet")
+# print(tweet)
   
 
 
