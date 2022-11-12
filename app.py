@@ -8,6 +8,7 @@ import secrets
 import requests
 import datetime
 import urllib.request, json
+import time
 # import logging
 # from models import Meme,Mention,DirectMessage
 import os  
@@ -28,7 +29,6 @@ stream = tweepy.Stream(
 class BOGReplies(tweepy.Stream):
 
     def on_status(self, status):
-        # mentions =stream.filter(track=['python']) .  
         statustext = status.text
         handle = status.user.screen_name 
         # print("response")
@@ -41,14 +41,26 @@ class BOGReplies(tweepy.Stream):
             tweet = cedirates()
             api.update_status(status = tweet, in_reply_to_status_id = new_id , auto_populate_reply_metadata=True)
             
-   # def on_limit(self,status):
-    #     print ("Rate Limit Exceeded, Sleep for 15 Mins")
-    #     time.sleep(15 * 60)
-    #     return True
+    def on_limit(self,status):
+            print ("Rate Limit Exceeded, Sleep for 15 Mins")
+            time.sleep(10 * 60)
+            return True
     
-    def on_error(self, status):
+    
+    def on_request_error(self, status):
         print(status)
-
+        
+    def on_disconnect(self, status):
+        print("Disconnected . Restarting stream")
+        bogreplies.filter(track=['Bank of Ghana Exchange Rates'],threaded=True)
+        print("restarted")
+        
+        
+    def on_connection_error(self, status):
+        print("stream connection on_conn error")
+        bogreplies.filter(track=['Bank of Ghana Exchange Rates'],threaded=True)
+        print("restarted")
+        
 bogreplies = BOGReplies(
   consumer_key, consumer_secret,
   access_token, access_token_secret
@@ -66,10 +78,7 @@ def cedirates():
     daysoftheweek = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
     day = datetime.datetime.today().weekday()
     day = daysoftheweek[day]
-    print("day")
-    print(day)
     datestr = day + " "+date.strftime("%b %m %Y, %I:%M %p")
-    print(datestr)
     url = "https://api.apilayer.com/exchangerates_data/convert?to=GHS&from=USD&amount=1"
     urlgbp = "https://api.apilayer.com/exchangerates_data/convert?to=GHS&from=GBP&amount=1"
     urleur = "https://api.apilayer.com/exchangerates_data/convert?to=GHS&from=EUR&amount=1"
@@ -80,8 +89,8 @@ def cedirates():
     }
     # usd rate 
     response = requests.request("GET", url, headers=headers, data = payload)
-    print("response:")
-    print(response.text)
+    # print("response:")
+    # print(response.text)
     data = response.text
     parse =json.loads(data)
     rate = parse["info"]["rate"]
@@ -122,7 +131,7 @@ def cedirates():
     # api.update_status(status=thetweet)
     # media = api.media_upload(image_path)
     # api.update_status(status=thetweet, media_ids=[media.media_id])
-
+    print("Successful tweet")
     return thetweet
 
 
@@ -139,10 +148,10 @@ def sendtweet():
     
 
 
-scheduler = BackgroundScheduler()
-scheduler.add_job(func=sendtweet,trigger="interval",seconds=28800)
-scheduler.start()
-atexit.register(lambda: scheduler.shutdown())
+# scheduler = BackgroundScheduler()
+# scheduler.add_job(func=sendtweet,trigger="interval",seconds=3600)
+# scheduler.start()
+# atexit.register(lambda: scheduler.shutdown())
 
 
 
