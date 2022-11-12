@@ -20,33 +20,41 @@ import atexit
 # stream from tweepy 
 
 
-# stream = tweepy.Stream(
-#    consumer_key, consumer_secret,
-#   access_token, access_token_secret
-# )
+stream = tweepy.Stream(
+   consumer_key, consumer_secret,
+  access_token, access_token_secret
+)
 
-# class BOGReplies(tweepy.Stream):
+class BOGReplies(tweepy.Stream):
 
-#     def on_status(self, status):
-#         # mentions =stream.filter(track=['python']) .  
-#         statustext = status.text
-#         new_id = status.id
-#         # if "Bank of Ghana Exchange Rates" in statustext:
-#         print("working")
-#         tweet = cedirates()
-#         api.update_status(status = tweet, in_reply_to_status_id = new_id , auto_populate_reply_metadata=True)
-#         api.update_status('@nosize71' + tweet , new_id)
+    def on_status(self, status):
+        # mentions =stream.filter(track=['python']) .  
+        statustext = status.text
+        handle = status.user.screen_name 
+        # print("response")
+        # print(status)
+        print("response")
+        print(handle)
+        new_id = status.id
+        if handle == "nosize71":
+            print("working")
+            tweet = cedirates()
+            api.update_status(status = tweet, in_reply_to_status_id = new_id , auto_populate_reply_metadata=True)
+            
+   # def on_limit(self,status):
+    #     print ("Rate Limit Exceeded, Sleep for 15 Mins")
+    #     time.sleep(15 * 60)
+    #     return True
+    
+    def on_error(self, status):
+        print(status)
 
-#    # def on_limit(self,status):
-#     #     print ("Rate Limit Exceeded, Sleep for 15 Mins")
-#     #     time.sleep(15 * 60)
-#     #     return True
-
-# bogreplies = BOGReplies(
-#   consumer_key, consumer_secret,
-#   access_token, access_token_secret
-# )
-# bogreplies.filter(track=['@nosize71'],threaded=True)
+bogreplies = BOGReplies(
+  consumer_key, consumer_secret,
+  access_token, access_token_secret
+)
+# bogreplies.filter(track=['Bank of Ghana Exchange Rates'],threaded=True)
+bogreplies.filter(track=['Bank of Ghana Exchange Rates'],threaded=True)
 
 
 
@@ -62,13 +70,13 @@ def cedirates():
     print(day)
     datestr = day + " "+date.strftime("%b %m %Y, %I:%M %p")
     print(datestr)
-    url = "https://api.apilayer.com/fixer/convert?to=GHS&from=USD&amount=1"
-    urlgbp = "https://api.apilayer.com/fixer/convert?to=GHS&from=GBP&amount=1"
-    urleur = "https://api.apilayer.com/fixer/convert?to=GHS&from=EUR&amount=1"
-    urlbtc = "https://api.apilayer.com/fixer/convert?to=GHS&from=BTC&amount=1"
+    url = "https://api.apilayer.com/exchangerates_data/convert?to=GHS&from=USD&amount=1"
+    urlgbp = "https://api.apilayer.com/exchangerates_data/convert?to=GHS&from=GBP&amount=1"
+    urleur = "https://api.apilayer.com/exchangerates_data/convert?to=GHS&from=EUR&amount=1"
+    urlbtc = "https://api.apilayer.com/exchangerates_data/convert?to=GHS&from=BTC&amount=1"
     payload = {}
     headers= {
-    "apikey": "RrFLOIVAHD6Yx8d6nP8FQ4lXZb7nTQri"
+    "apikey": "mEt34QnraazOZ10YzUmUnWxsYqwNLnvb"
     }
     # usd rate 
     response = requests.request("GET", url, headers=headers, data = payload)
@@ -104,29 +112,39 @@ def cedirates():
     databtc = responsebtc.text
     parsebtc =json.loads(databtc)
     ratebtc = parsebtc["info"]["rate"]
-    ratebtc = round(ratebtc,2)
+    ratebtc = round(ratebtc)
     
     
-    image_path =  os.path.join(basedir, 'static/cedirates.gif')
+    # image_path =  os.path.join(basedir, 'static/cedirates.gif')
     thetweet = datestr + "\n 💵 1 USD ➔ ₵ " + str(rate) + "\n 💶 1 EUR ➔ ₵ " + str(rateeur) + "\n 💷 1 GBP ➔ ₵ "+ str(rategbp) + "\n₿   1 BTC ➔ ₵ "+str(ratebtc)
-    print(thetweet)
-    print(image_path)
+    # print(thetweet)
+    # print(image_path)
     # api.update_status(status=thetweet)
-    media = api.media_upload(image_path)
-    api.update_status(status=thetweet, media_ids=[media.media_id])
+    # media = api.media_upload(image_path)
+    # api.update_status(status=thetweet, media_ids=[media.media_id])
 
     return thetweet
 
 
-# scheduler = BackgroundScheduler()
-# scheduler.add_job(func=cedirates,trigger="interval",seconds=86400)
-# scheduler.start()
-# atexit.register(lambda: scheduler.shutdown())
 
-# tweet = cedirates()
-# print("tweet")
-# print(tweet)
-  
+@app.route('/sendtweet')
+def sendtweet():
+    thetweet = cedirates()
+    image_path =  os.path.join(basedir, 'static/cedirates.gif')
+    media = api.media_upload(image_path)
+    api.update_status(status=thetweet, media_ids=[media.media_id])
+    return thetweet
+
+
+    
+
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=sendtweet,trigger="interval",seconds=28800)
+scheduler.start()
+atexit.register(lambda: scheduler.shutdown())
+
+
 
 
 
