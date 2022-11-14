@@ -21,52 +21,53 @@ import atexit
 # stream from tweepy 
 
 
-stream = tweepy.Stream(
-   consumer_key, consumer_secret,
-  access_token, access_token_secret
-)
+# stream = tweepy.Stream(
+#    consumer_key, consumer_secret,
+#   access_token, access_token_secret
+# )
 
-class BOGReplies(tweepy.Stream):
+# class BOGReplies(tweepy.Stream):
 
-    def on_status(self, status):
-        statustext = status.text
-        handle = status.user.screen_name 
-        # print("response")
-        # print(status)
-        print("response")
-        print(handle)
-        new_id = status.id
-        if handle == "nosize71":
-            print("working")
-            tweet = cedirates()
-            api.update_status(status = tweet, in_reply_to_status_id = new_id , auto_populate_reply_metadata=True)
+#     def on_status(self, status):
+#         statustext = status.text
+#         handle = status.user.screen_name 
+#         # print("response")
+#         # print(status)
+#         print("response")
+#         print(handle)
+#         new_id = status.id
+#         if handle == "nosize71":
+#             print("working")
+#             tweet = cedirates()
+#             api.update_status(status = tweet, in_reply_to_status_id = new_id , auto_populate_reply_metadata=True)
             
-    def on_limit(self,status):
-            print ("Rate Limit Exceeded, Sleep for 15 Mins")
-            time.sleep(10 * 60)
-            return True
+#     def on_limit(self,status):
+#             print ("Rate Limit Exceeded, Sleep for 15 Mins")
+#             time.sleep(10 * 60)
+#             return True
     
     
-    def on_request_error(self, status):
-        print(status)
+#     def on_request_error(self, status):
+#         print(status)
         
-    def on_disconnect(self, status):
-        print("Disconnected . Restarting stream")
-        bogreplies.filter(track=['Bank of Ghana Exchange Rates'],threaded=True)
-        print("restarted")
+#     def on_disconnect(self,status):
+#         print("Disconnected . Restarting stream")
+#         print(status)
+#         bogreplies.filter(track=['Bank of Ghana Exchange Rates'],threaded=True)
+#         print("restarted")
         
         
-    def on_connection_error(self, status):
-        print("stream connection on_conn error")
-        bogreplies.filter(track=['Bank of Ghana Exchange Rates'],threaded=True)
-        print("restarted")
+#     def on_connection_error(self, status):
+#         print("stream connection on_conn error")
+#         bogreplies.filter(track=['Bank of Ghana Exchange Rates'],threaded=True)
+#         print("restarted")
         
-bogreplies = BOGReplies(
-  consumer_key, consumer_secret,
-  access_token, access_token_secret
-)
+# bogreplies = BOGReplies(
+#   consumer_key, consumer_secret,
+#   access_token, access_token_secret
+# )
+# # bogreplies.filter(track=['Bank of Ghana Exchange Rates'],threaded=True)
 # bogreplies.filter(track=['Bank of Ghana Exchange Rates'],threaded=True)
-bogreplies.filter(track=['Bank of Ghana Exchange Rates'],threaded=True)
 
 
 
@@ -130,7 +131,6 @@ def cedirates():
     # print(image_path)
     # api.update_status(status=thetweet)
     # media = api.media_upload(image_path)
-    # api.update_status(status=thetweet, media_ids=[media.media_id])
     print("Successful tweet")
     return thetweet
 
@@ -148,10 +148,10 @@ def sendtweet():
     
 
 
-# scheduler = BackgroundScheduler()
-# scheduler.add_job(func=sendtweet,trigger="interval",seconds=3600)
-# scheduler.start()
-# atexit.register(lambda: scheduler.shutdown())
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=sendtweet,trigger="interval",seconds=1000)
+scheduler.start()
+atexit.register(lambda: scheduler.shutdown())
 
 
 
